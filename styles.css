@@ -1,0 +1,172 @@
+/* Lightweight, mobile-first CSS for gEspresso Checkpoint */
+
+/* Base / reset-ish */
+:root{
+  --max-width: 980px;
+  --container-padding: 16px;
+  --bg: #ffffff;
+  --muted: #666;
+  --accent: #222;
+  --card-bg: #f8f9fa;
+  --radius: 10px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color-scheme: light;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--accent);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.4;
+  font-size:16px;
+}
+
+/* Utility */
+.container{
+  width:100%;
+  max-width:var(--max-width);
+  margin:0 auto;
+  padding:0 var(--container-padding);
+}
+
+/* Accessibility helper */
+.visually-hidden{
+  position:absolute !important;
+  height:1px; width:1px;
+  overflow:hidden; clip:rect(1px,1px,1px,1px);
+  white-space:nowrap; border:0; padding:0; margin:-1px;
+}
+
+/* Header */
+.site-header{
+  border-bottom:1px solid #eee;
+  background:linear-gradient(0deg, rgba(255,255,255,0.9), rgba(255,255,255,0.9));
+  position:sticky;
+  top:0;
+  z-index:30;
+  backdrop-filter: blur(4px);
+}
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+}
+.logo{
+  text-decoration:none;
+  color:var(--accent);
+  font-weight:700;
+  font-size:1rem;
+}
+
+/* Nav */
+.nav-toggle{
+  font-size:1.2rem;
+  background:transparent;
+  border:0;
+  padding:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.site-nav{
+  display:none;
+}
+.site-nav.open{
+  display:block;
+}
+.site-nav ul{
+  list-style:none;
+  margin:0; padding:0; display:flex; gap:12px; align-items:center;
+  flex-wrap:wrap;
+}
+.site-nav a{
+  text-decoration:none;
+  color:var(--accent);
+  padding:6px 8px;
+  border-radius:6px;
+  font-size:0.95rem;
+}
+.site-nav a:hover,
+.site-nav a:focus{ background:#eee }
+
+/* Hero */
+.hero{
+  padding:20px 0 12px;
+  text-align:center;
+}
+.hero h1{ margin:6px 0; font-size:1.5rem; line-height:1.15; }
+.lead{ color:var(--muted); margin:6px 0 16px; }
+
+/* Form */
+.lookup-form{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  margin:0 auto;
+  max-width:560px;
+}
+.lookup-form input{
+  flex:1 1 220px;
+  min-width:0;
+  padding:10px 12px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-size:1rem;
+}
+.lookup-form button{
+  padding:10px 14px;
+  border-radius:8px;
+  border:0;
+  background:#222;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* Cards */
+.card{
+  background:var(--card-bg);
+  padding:14px;
+  margin:14px 0;
+  border-radius:var(--radius);
+  box-shadow:0 0 0 1px rgba(0,0,0,0.02);
+}
+.result{
+  margin-top:12px;
+  font-weight:600;
+  color:var(--accent);
+}
+
+/* Footer */
+.site-footer{
+  padding:18px 0;
+  text-align:center;
+  color:var(--muted);
+  font-size:0.9rem;
+  border-top:1px solid #f0f0f0;
+}
+
+/* Responsive: default mobile-first already. Larger screens refine layout */
+@media (min-width: 700px) {
+  .header-inner{ padding:18px 0; }
+  .logo{ font-size:1.1rem }
+  .hero h1{ font-size:2rem }
+  .site-nav{ display:block !important; }
+  .nav-toggle{ display:none; } /* hide toggle on larger screens */
+  .lookup-form{ justify-content:flex-start; }
+  .lookup-form input{ flex:0 1 360px; }
+}
+
+/* Keep touch targets large enough */
+@media (hover: hover) {
+  .lookup-form button:hover { transform: translateY(-1px); }
+}
