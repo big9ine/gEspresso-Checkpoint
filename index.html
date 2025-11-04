@@ -2,110 +2,873 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>gEspresso Checkpoint</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>gEspresso — Pixel Coffee Shop</title>
 
-  <!-- Minimal, mobile-friendly CSS included as separate file for clarity -->
-  <link rel="stylesheet" href="styles.css" />
+  <!-- Retro pixel font -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-  <!-- A tiny touch: prefer-reduced-motion support -->
   <style>
-    @media (prefers-reduced-motion: reduce) {
-      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+    :root{
+      --coffee-900: #2b1509;
+      --coffee-800: #3b2212;
+      --coffee-700: #633b18;
+      --coffee-600: #8b5a2b;
+      --cream-200: #fff8f0;
+      --accent: #d4a762;
+      --ui: #e9d6bb;
+      --shadow: rgba(0,0,0,0.65);
+      --pixel-size: 4px;
+      --bg: linear-gradient(180deg,#09100f 0%, #0b0b0b 60%);
+      --tap-size: 56px; /* bigger tap targets for touch */
     }
+
+    /* Basic resets and crisp retro text */
+    *{ box-sizing:border-box; margin:0; padding:0; font-family: 'Press Start 2P', monospace, "Segoe UI", Tahoma, sans-serif; -webkit-font-smoothing: none; image-rendering: pixelated; }
+    html,body{ height:100%; }
+    body{
+      min-height:100vh;
+      background: var(--bg);
+      color:var(--ui);
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    /* Layout container */
+    .container{
+      width:980px;
+      max-width:980px;
+      border-radius:8px;
+      overflow:hidden;
+      background: linear-gradient(180deg,#1f1108,#0f0a06);
+      border:6px solid #070404;
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:18px;
+      padding:18px;
+      box-shadow: 0 20px 60px var(--shadow);
+    }
+
+    /* Left: pixel coffee shop scene */
+    .shop-scene{
+      background: linear-gradient(180deg,#2a160b,#1a0f09);
+      border:4px solid #0d0806;
+      border-radius:6px;
+      height:620px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:center;
+      position:relative;
+    }
+
+    .shop-header{
+      width:100%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color:var(--accent);
+      font-size:12px;
+      gap:8px;
+    }
+
+    /* Top left site title */
+    .shop-title{
+      font-size:22px;
+      color:var(--ui);
+      font-weight:900;
+      letter-spacing:1px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    #header-logo { width:40px; height:40px; object-fit:contain; border-radius:6px; background:transparent; display:inline-block; cursor:pointer; filter: drop-shadow(0 6px 4px rgba(0,0,0,0.6)); }
+    #header-logo.empty { opacity:0.35; filter: none; }
+
+    .header-alert { width:20px; height:20px; border-radius:4px; background: linear-gradient(180deg,#ff3b3b,#b30b0b); border:2px solid #2a0a0a; box-shadow: 0 6px 0 rgba(179,11,11,0.35); display:inline-block; }
+
+    .counter{ width:92%; height:340px; background: linear-gradient(180deg,#3b2314,#2b160b); border:6px solid #070504; border-radius:6px; display:flex; align-items:flex-end; justify-content:center; padding:14px; position:relative; box-shadow: inset 0 -6px 0 rgba(0,0,0,0.4); }
+
+    .brewer { width:320px; height:320px; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0 6px, transparent 6px 12px), linear-gradient(180deg,#5b3a27,#2b160b); border:5px solid #050403; border-radius:6px; position:relative; display:flex; flex-direction:column; align-items:center; padding:12px; justify-content:flex-start; box-shadow: 0 8px 0 #000, inset -6px -6px 0 rgba(0,0,0,0.3); }
+
+    .panel { width:280px; height:88px; background: linear-gradient(180deg,#20120a,#341b0f); border:4px solid #070504; border-radius:6px; display:flex; gap:10px; padding:10px; align-items:center; justify-content:space-between; position:relative; }
+
+    .machine-left { display:flex; flex-direction:column; gap:6px; width:62%; }
+    .machine-display { width:100%; height:36px; background:#090909; border:3px solid #030202; color:var(--accent); display:flex; align-items:center; justify-content:flex-start; padding:6px 10px; font-size:11px; letter-spacing:1px; text-shadow: 0 2px 0 #000; }
+
+    .machine-input-row { display:flex; gap:8px; align-items:center; width:100%; }
+    .search-input { flex:1 1 auto; min-width:100px; height:28px; padding:6px 8px; font-size:11px; border-radius:4px; border:3px solid #060404; background:linear-gradient(180deg,#24140a,#341c0f); color:var(--ui); }
+
+    .brew-handle { width:98px; height:48px; background: linear-gradient(180deg,#4b2d1b,#2f190f); border:4px solid #070504; border-radius:8px; display:flex; align-items:center; justify-content:center; position:relative; cursor:pointer; box-shadow: 0 10px 0 #000; transform-origin: center; transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 120ms; user-select:none; color:var(--cream-200); font-weight:900; font-size:13px; letter-spacing:1px; }
+    .brew-handle:active, .brew-handle.pressed { transform: translateY(6px) rotate(12deg); box-shadow: 0 4px 0 #000; }
+    .handle-knob { width:18px; height:18px; background: linear-gradient(180deg,#ffdcb8,#c9a07a); border:3px solid #2b1509; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:8px; color:#2b1509; margin-right:8px; transform-origin:center; transition: transform 220ms; }
+    .brew-handle.pressed .handle-knob { transform: rotate(-28deg) translateY(1px); }
+
+    .spout-area { width:260px; height:120px; margin-top:6px; display:flex; align-items:flex-end; justify-content:center; gap:8px; position:relative; }
+    .cup-wrap { display:flex; flex-direction:column; align-items:center; gap:6px; position:relative; }
+    .cup { width:78px; height:60px; background: linear-gradient(180deg,#b47d4e,#8b5a2b); border:4px solid #070504; border-radius:6px 6px 8px 8px; box-shadow: inset -6px -6px 0 rgba(0,0,0,0.4); position:relative; display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; z-index:2; overflow:visible; }
+
+    /* Cup steam via pseudo elements when .brewing class is set on .cup */
+    .cup::after, .cup::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      opacity: 0;
+    }
+    /* main steam vertical column */
+    .cup::after {
+      bottom: 100%;
+      width: 6px;
+      height: 16px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.65));
+      filter: blur(0.5px);
+      transform-origin: center bottom;
+    }
+    /* secondary wisp */
+    .cup::before {
+      bottom: 110%;
+      width: 12px;
+      height: 10px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5));
+      filter: blur(1px);
+      transform-origin: center bottom;
+    }
+    /* when brewing, animate the cup steam */
+    .cup.brewing::after {
+      animation: cupSteamRise 1200ms cubic-bezier(.2,.9,.2,1) infinite;
+      opacity: 1;
+    }
+    .cup.brewing::before {
+      animation: cupSteamGentle 1400ms cubic-bezier(.3,.85,.25,1) infinite;
+      opacity: 0.9;
+    }
+
+    @keyframes cupSteamRise {
+      0% { transform: translateX(-50%) translateY(0) scaleY(0.9); opacity: 0.0; }
+      30% { opacity: 0.9; transform: translateX(-50%) translateY(-26px) scaleY(1.05); }
+      100% { transform: translateX(-50%) translateY(-72px) scaleY(1.2); opacity: 0; }
+    }
+    @keyframes cupSteamGentle {
+      0% { transform: translateX(-50%) translateY(0) scaleX(0.95); opacity: 0; }
+      35% { transform: translateX(-50%) translateY(-18px) scaleX(1.02); opacity: 0.75; }
+      100% { transform: translateX(-50%) translateY(-48px) scaleX(1.12); opacity: 0; }
+    }
+
+    .cup-base { width:110px; height:20px; border-radius:6px; background: linear-gradient(180deg,#2b160b,#1a0c07); border:4px solid #070504; box-shadow: 0 6px 0 #000; display:flex; align-items:center; justify-content:center; margin-top:2px; z-index:1; }
+
+    .brew-steam { position:absolute; bottom:92px; display:flex; gap:8px; pointer-events:none; z-index:3; }
+    .brew-steam .pix { width:10px; height:20px; background: linear-gradient(180deg,#fffefc,#dcd6cc); border:2px solid rgba(0,0,0,0.08); border-radius:2px; opacity:0; transform-origin:center bottom; }
+
+    .right-panel{ padding:8px; display:flex; flex-direction:column; gap:12px; min-height:620px; }
+    .tagline{ font-size:20px; color:#e6cfa6; font-weight:900; line-height:1.6; margin:22px 0; white-space:normal; }
+
+    .leaderboard{ margin-top:6px; padding:18px; border-radius:6px; background: linear-gradient(180deg,#392414,#2b160b); border:4px solid #0b0704; color: var(--ui); font-size:12px; text-align:center; box-shadow: inset 0 6px 0 rgba(255,255,255,0.02); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
+    .leaderboard .small-label { font-size:12px; font-weight:700; color:#d4b889; }
+    .leaderboard .top-feature { display:flex; flex-direction:column; align-items:center; gap:6px; }
+    .leaderboard .top-name { font-size:14px; color:#d4b889; font-weight:900; }
+    .leaderboard .record{ font-size:64px; line-height:1; font-weight:900; color: var(--accent); letter-spacing:2px; margin-top:6px; text-shadow: 0 2px 0 #000; }
+    .leaderboard .last-user{ font-size:12px; color:#d4b889; margin-top:6px; }
+
+    .top10 { width:100%; margin-top:6px; text-align:left; background: linear-gradient(180deg,#24140a,#28150b); border-radius:6px; padding:10px; border:3px solid #0b0704; }
+    .top10 h3 { font-size:12px; color:#d4b889; margin-bottom:8px; font-weight:900; }
+    .top10 ol { list-style:decimal; margin-left:18px; color:var(--ui); font-size:11px; padding-left:6px; }
+    .top10 li { margin:6px 0; display:flex; justify-content:space-between; gap:12px; }
+    .top10 .name { color:#e9d6bb; font-weight:700; max-width:65%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .top10 .score { color:var(--accent); font-weight:900; }
+
+    .dont-click-row { margin-top:8px; display:flex; justify-content:center; width:100%; }
+    .dont-click-btn { background: linear-gradient(180deg,#2a1208,#381a0f); color: #ffd9b4; border:4px solid #070504; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:900; font-size:12px; box-shadow: 0 6px 0 #000; width:92%; text-align:center; }
+    .hidden-blurb { display:none; margin-top:8px; width:92%; background: linear-gradient(180deg,#22120a,#2b140a); border:3px solid #070504; border-radius:8px; padding:12px; color:#e6cfa6; font-size:12px; text-align:left; box-shadow: inset 0 6px 0 rgba(255,255,255,0.02); line-height:1.35; white-space:normal; }
+
+    .share-row{ margin-top:12px; display:flex; gap:10px; justify-content:center; align-items:center }
+    .share-btn{ padding:8px 10px; border-radius:4px; border:none; background:#1da1f2; color:#fff; cursor:pointer; font-weight:800; font-size:10px; box-shadow: 0 6px 0 #0a5e9a; }
+    .dismiss-btn{ padding:8px 10px; border-radius:4px; border:none; background:#fff; cursor:pointer; color:#291507; font-weight:800; font-size:10px; box-shadow: 0 6px 0 #a58a6b; }
+    .download-btn { padding:8px 12px; border-radius:6px; border:none; background: linear-gradient(180deg,#8b5a2b,#5b361f); color:#fff; font-weight:900; cursor:pointer; box-shadow: 0 6px 0 #000; }
+
+    .overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.75); z-index:2200; padding:20px; }
+    .overlay.active{ display:flex; }
+    .popup{ width:100%; max-width:720px; background: linear-gradient(180deg,#2a170d,#1b1009); border-radius:6px; padding:18px; text-align:center; border:6px solid #000; box-shadow: 0 24px 60px rgba(0,0,0,0.8); color:var(--ui); }
+    .popup-header{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px }
+    .popup-title{ font-weight:900; color:var(--ui); font-size:12px; letter-spacing:1px }
+    .close-btn{ background:#050505;border:none;font-size:14px;color:var(--ui);cursor:pointer;padding:6px; border-radius:4px; box-shadow: 0 6px 0 #000; }
+
+    /* Improve popup layout: spread elements and prevent overlap */
+    .score-area{
+      display:grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto auto;
+      gap:12px;
+      align-items:center;
+      justify-items:center;
+      padding:6px 0 2px 0;
+    }
+    .score-display{ display:flex; align-items:center; gap:6px; justify-content:center; }
+    .score-value{ font-size:56px; line-height:1; color:var(--accent); padding:12px 18px; border:6px solid #070504; border-radius:6px; box-shadow: inset -6px -6px 0 rgba(0,0,0,0.6), 0 12px 0 #000; background: linear-gradient(180deg,#2f1b12,#3b2716); }
+    .score-suffix{ font-size:12px; color:#d9b889; padding-bottom:6px; }
+
+    #popup-username { font-size:14px; color:#ffdcb8; font-weight:900; margin-top:6px; }
+
+    .tier{ margin-top:2px; font-weight:900; color: var(--ui); font-size:14px; letter-spacing:1px; display:inline-block; padding:8px 12px; border-radius:6px; background: linear-gradient(90deg, var(--coffee-800), var(--coffee-900)); border:3px solid #060403; box-shadow: 0 8px 0 #000; }
+
+    .comment{ font-size:13px; color:#ffdcb8; margin-top:8px; padding:8px 12px; background: rgba(0,0,0,0.12); border-radius:6px; max-width:92%; text-align:center; }
+
+    @media (max-width:980px){
+      .container{ grid-template-columns: 1fr; padding:12px; gap:12px; width:calc(100% - 28px); max-width:none; }
+      .shop-scene{ height:auto; min-height:520px; }
+      .brewer{ width:100%; max-width:420px; height:auto; padding:10px; }
+      .panel { width:100%; box-sizing:border-box; }
+      .counter{ height:auto; padding:12px; }
+      .right-panel{ min-height:auto; padding:6px; }
+      .score-value{ font-size:44px; }
+      .leaderboard .record { font-size:56px; }
+      .tagline { font-size:18px; margin:18px 0; }
+      .brew-handle { width:120px; height:var(--tap-size); font-size:14px; }
+      .search-input { height:44px; font-size:14px; padding:10px; }
+      #header-logo { width:48px; height:48px; }
+    }
+
+    @media (max-width:520px){
+      .panel { flex-direction:column; height:auto; gap:8px; padding:8px; align-items:stretch; }
+      .machine-left { width:100%; }
+      .brew-handle { width:100%; height:48px; }
+      .spout-area { width:100%; }
+      .tagline { font-size:16px; margin:16px 0; }
+      .score-value { font-size:36px; padding:10px 12px; }
+      .shop-title{ font-size:16px; }
+    }
+
+    /* small helpers for "live" changes (visual) */
+    .pulse { animation: pulse 900ms infinite alternate; }
+    @keyframes pulse { from { opacity: 0.6; } to { opacity:1; transform:translateY(-2px); } }
+
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="logo" href="/">gEspresso Checkpoint</a>
+  <div class="container" role="main" aria-label="gEspresso pixel coffee shop">
+    <div class="shop-scene" aria-hidden="false">
+      <div class="shop-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <!-- now points to main/espresso-logo.png by default (bundled in main folder) -->
+          <img id="header-logo" class="empty" src="" alt="Espresso logo (click to add)" title="Click to add espresso logo" />
+          <div class="shop-title">gEspresso Checkpoint</div>
+          <div id="header-alert" class="header-alert" title="alert indicator"></div>
+        </div>
+      </div>
 
-      <!-- simple, lightweight responsive nav: shows/hides with CSS only -->
-      <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">
-        ☰
-      </button>
+      <div class="counter" role="region" aria-label="Counter with brewing machine">
+        <div class="brewer" id="brewer" aria-label="Brewing machine">
+          <div class="light-strip" id="light-strip" aria-hidden="true">
+            <div class="light" id="L1"></div><div class="light" id="L2"></div><div class="light" id="L3"></div><div class="light" id="L4"></div><div class="light" id="L5"></div>
+          </div>
 
-      <nav id="site-nav" class="site-nav" role="navigation">
-        <ul>
-          <li><a href="#about">About</a></li>
-          <li><a href="#demo">Demo</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
+          <div class="panel" aria-hidden="false">
+            <div class="machine-left">
+              <div class="machine-display" id="machine-display" aria-live="polite" aria-atomic="true">Espresso Machine</div>
+              <div class="machine-input-row" style="margin-top:4px;">
+                <input type="text" id="username-input" class="search-input" placeholder="Enter your X username..." aria-label="X username" required />
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center;">
+              <div role="button" tabindex="0" aria-label="Brew" id="brew-handle" class="brew-handle" title="Brew">
+                <span class="handle-knob" id="handle-knob" aria-hidden="true">●</span>Brew
+              </div>
+            </div>
+          </div>
+
+          <div class="spout-area" aria-hidden="true">
+            <div class="cup-wrap">
+              <div class="cup" id="machine-cup" aria-hidden="true"></div>
+              <div class="cup-base" id="cup-base" aria-hidden="true"></div>
+            </div>
+
+            <div class="brew-steam" id="brew-steam" aria-hidden="true">
+              <div class="pix" id="p1"></div>
+              <div class="pix" id="p2"></div>
+              <div class="pix" id="p3"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="attendant" aria-hidden="true" role="img" aria-label="Coffee attendant">
+          <div class="head"></div>
+          <div class="body"><div class="apron"><div class="smile"></div></div></div>
+        </div>
+      </div>
+
+      <div class="dont-click-row">
+        <button id="dont-click-btn" class="dont-click-btn" aria-expanded="false">Don't click me</button>
+      </div>
+
+      <div id="hidden-blurb" class="hidden-blurb" aria-hidden="true">
+        Now I'll have to educate you. Espresso is building the infrastructure to unify Ethereum L2s/L3s with enhanced interop, from trust-minimized fast messaging all the way to synchronous composability.
+        <br><br>
+        So what is Espresso? Espresso is the base layer for rollups. It is designed with modularity in mind, meaning rollups can choose which parts of Espresso they want to use, instead of adopting everything. Now let's get back to the brewing machine!
+      </div>
     </div>
-  </header>
 
-  <main class="container">
-    <section id="hero" class="hero">
-      <h1>How many gEspresso mentions do you have on X?</h1>
-      <p class="lead">A lightweight site that counts gEspresso mentions on X (formerly Twitter).</p>
+    <div class="right-panel">
+      <div class="header">
+        <div class="tagline">Are you an Espresso Maxi? let's see how many gEspressos you've said on X</div>
+      </div>
 
-      <!-- Example input area: keep forms compact and accessible -->
-      <form id="lookup-form" class="lookup-form" aria-label="Lookup gEspresso mentions">
-        <label for="username" class="visually-hidden">X username</label>
-        <input id="username" name="username" type="text" placeholder="@username" inputmode="text" autocomplete="username" />
-        <button type="submit">Check</button>
-      </form>
+      <div class="leaderboard" aria-hidden="false" role="region" aria-label="Leaderboard">
+        <div class="small-label">Highest Record so far</div>
 
-      <div id="result" class="result" aria-live="polite"></div>
-    </section>
+        <div class="top-feature">
+          <div id="top-name" class="top-name">—</div>
+          <div id="highest-record" class="record" aria-label="record">—</div>
+        </div>
 
-    <section id="about" class="card">
-      <h2>About</h2>
-      <p>This site shows how many times a handle mentioned gEspresso on X. It's built to be tiny and usable on phones — fast, legible, and low bandwidth.</p>
-    </section>
+        <div id="last-user" class="last-user">last checked: —</div>
 
-    <section id="demo" class="card">
-      <h2>Demo</h2>
-      <p>Results appear here after you submit a username. (This demo page doesn't include server-side lookup.)</p>
-    </section>
+        <div class="top10" id="top10" aria-label="Top 10 gEspresso leaderboard">
+          <h3>Top 10 gEspresso leaderboard</h3>
+          <ol id="top10-list">
+          </ol>
+        </div>
+      </div>
 
-    <section id="contact" class="card">
-      <h2>Contact</h2>
-      <p>Open an issue on GitHub: <a href="https://github.com/big9ine/gEspresso-Checkpoint">big9ine/gEspresso-Checkpoint</a></p>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      <small>© gEspresso Checkpoint — lightweight and mobile-friendly.</small>
     </div>
-  </footer>
+  </div>
 
-  <!-- Tiny JS to toggle nav on small screens and prevent layout-clogging -->
+  <input id="logo-file-input" type="file" accept="image/*" style="display:none" />
+
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="popup" role="document" aria-labelledby="popup-title">
+      <div class="popup-header">
+        <div class="popup-title" id="popup-title">gEspresso Result</div>
+        <button class="close-btn" id="popup-close" title="Close" aria-label="Close">&times;</button>
+      </div>
+
+      <div class="score-area" aria-live="polite">
+        <div class="logo-layer" id="logo-layer" aria-hidden="true" style="display:none"></div>
+
+        <div class="score-display" aria-hidden="false">
+          <div id="score" class="score-value" aria-label="gEspresso score" role="status" aria-live="polite">0</div>
+        </div>
+
+        <div id="popup-username">@unknown</div>
+
+        <div id="tier" class="tier" aria-hidden="true">—</div>
+
+        <div id="comment" class="comment" aria-hidden="true">Your result will appear here</div>
+
+        <div class="share-row" id="share-row" style="display:none">
+          <button id="share-btn" class="share-btn">Share on X</button>
+          <button id="download-btn" class="download-btn" title="Download your score image">Download Score</button>
+          <button id="close-btn" class="dismiss-btn">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    (function () {
-      // Nav toggle: very small, no framework, accessible
-      var toggle = document.getElementById('nav-toggle');
-      var nav = document.getElementById('site-nav');
+    // Persisted storage keys
+    const STORAGE_KEY = 'gespresso_highest';
+    const STORAGE_LAST_USER = 'gespresso_last_user';
+    const STORAGE_TOP10 = 'gespresso_top10';
+    const STORAGE_LOGO = 'gespresso_header_logo';
 
-      toggle.addEventListener('click', function () {
-        var expanded = this.getAttribute('aria-expanded') === 'true';
-        this.setAttribute('aria-expanded', String(!expanded));
-        nav.classList.toggle('open');
-      });
+    // DOM
+    const input = document.getElementById('username-input');
+    const overlay = document.getElementById('overlay');
+    const popupClose = document.getElementById('popup-close');
+    const scoreEl = document.getElementById('score');
+    const popupUsernameEl = document.getElementById('popup-username');
+    const commentEl = document.getElementById('comment');
+    const logoLayer = document.getElementById('logo-layer');
+    const shareRow = document.getElementById('share-row');
+    const shareBtn = document.getElementById('share-btn');
+    const closeBtn = document.getElementById('close-btn');
+    const tierEl = document.getElementById('tier');
+    const highestEl = document.getElementById('highest-record');
+    const topNameEl = document.getElementById('top-name');
+    const lastUserEl = document.getElementById('last-user');
+    const top10ListEl = document.getElementById('top10-list');
+    const brewHandle = document.getElementById('brew-handle');
+    const machineDisplay = document.getElementById('machine-display');
+    const machineCup = document.getElementById('machine-cup');
+    const cupBase = document.getElementById('cup-base');
+    const brewSteam = document.getElementById('brew-steam');
+    const L1 = document.getElementById('L1'), L2 = document.getElementById('L2'), L3 = document.getElementById('L3'), L4 = document.getElementById('L4'), L5 = document.getElementById('L5');
+    const lights = [L1,L2,L3,L4,L5];
+    const p1 = document.getElementById('p1'), p2 = document.getElementById('p2'), p3 = document.getElementById('p3');
+    const pixels = [p1,p2,p3];
+    const headerAlert = document.getElementById('header-alert');
+    const dontClickBtn = document.getElementById('dont-click-btn');
+    const hiddenBlurb = document.getElementById('hidden-blurb');
+    const downloadBtn = document.getElementById('download-btn');
+    const headerLogo = document.getElementById('header-logo');
+    const logoFileInput = document.getElementById('logo-file-input');
 
-      // Example: stubbed form handler to show result without network
-      var form = document.getElementById('lookup-form');
-      var result = document.getElementById('result');
+    // BroadcastChannel for cross-tab live updates (fallback to storage event)
+    let bc = null;
+    try { if ('BroadcastChannel' in window) bc = new BroadcastChannel('gespresso-channel'); } catch(e){ bc = null; }
 
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var username = (document.getElementById('username').value || '').trim();
-        if (!username) {
-          result.textContent = 'Please enter a username.';
-          return;
+    // Special comments map (exact username keys as provided)
+    const SPECIAL_COMMENTS = {
+      "Kelechi_xyz":"I see you creator!",
+      "arhumkhan01":"I see you Contributor!",
+      "Chizaramch":"gEspresso mint.gg Legend!",
+      "Papalalas":"Devoted Papalala, love you!",
+      "cutemoon66":"This artist just broke the scale!",
+      "PerrieDExplorer":"Writer Final Bossu!",
+      "cryptoccin":"Espresso love Investors!",
+      "cybereliteX":"I see you Creator!",
+      "Infatuated_simp":"A simp for Espresso!",
+      "Mah__1990":"Espresso Einstein!",
+      "James84218":"We love Bull posters!",
+      "Sogang":"You have the best composable pfp!",
+      "chlealrj":"I see you contributor!",
+      "Arashb122":"Tell me, who does it like Arash?",
+      "olivertylor3":"I'll subscribe to your Youtube Chotu!",
+      "CryptaCobra":"They only steal from Legends!",
+      "mr_satoshiii":"On another level!",
+      "Turncrypt":"Who doesn't know this guy!",
+      "0xTaishi":"Wait, a mod?.. 👀",
+      "zoroonrypto":"One eyed Espresso Maxi",
+      "Manners_ST":"Wait, a mod?.. 👀",
+      "sajiiiiiiii8":"I bet you don't know your username offhand",
+      "Superfly":"Holds 5% of composables btw",
+      "nabi_sarvi":"an artist wants to break our scale?",
+      "Jillrgrunter":"OMG, Jill in the building 🌋",
+      "siannieeee":"Wait, a team?.. 👀",
+      "benafisch":"A prof wants to taste my brewwww",
+      "benediktbuenz":"A prof wants to taste my brewwww",
+      "cryptomachia":"You have the coolest composable btw",
+      "0xGoldzn":"Team wants to break our machine hehe!",
+      "Zun2025":"Zun? 👀",
+      "0xMoei":"King Moei? 👀",
+      "lohith0001":"Bull poster, I see you!"
+    };
+
+    // Create a lowercase-keyed version of SPECIAL_COMMENTS so lookups become case-insensitive
+    const SPECIAL_COMMENTS_LOWER = {};
+    Object.keys(SPECIAL_COMMENTS).forEach(k => {
+      SPECIAL_COMMENTS_LOWER[k.toLowerCase()] = SPECIAL_COMMENTS[k];
+    });
+
+    // Utilities: deterministic hashing (FNV-1a), scoring, tiering, comments
+    function hashStr(str){
+      let h = 2166136261 >>> 0;
+      for (let i = 0; i < str.length; i++){
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619) >>> 0;
+      }
+      return h >>> 0;
+    }
+
+    /**
+     * scoreFromHash(hVal, preferLow)
+     *
+     * Deterministic scoring based on hash:
+     * - If preferLow === false: behave like original biased mapping across 0..500.
+     * - If preferLow === true: produce a deterministic distribution that
+     *   makes 0..100 the most common bucket (but spreads values across 0..100),
+     *   still occasionally producing 101..199 and rarely 200..500.
+     */
+    function scoreFromHash(hVal, preferLow = false){
+      const UINT_MAX = 0xFFFFFFFF >>> 0;
+      const p = (hVal / UINT_MAX);           // 0..1 uniform-ish from hash
+      const baseExponent = 1.9;
+      const biased = Math.pow(p, baseExponent);
+      const normal = Math.max(0, Math.min(500, Math.floor(biased * 500)));
+
+      if (!preferLow){
+        return normal;
+      }
+
+      // For preferLow=true:
+      // Use the middle byte of the hash to decide which bucket to pick deterministically.
+      // r: 0..255
+      const r = (hVal >>> 8) & 0xFF;
+
+      // Bucket probabilities (deterministic via thresholds):
+      // - Low bucket (0..100): ~72% (most common) -> r < 184
+      // - Mid bucket (101..199): ~24% -> r in [184, 244)
+      // - High bucket (200..500): rare -> r >= 244 (~4.7%)
+      if (r < 184){
+        // Low bucket: map into 0..100 with a stronger exponent so low values are common but spread across 0..100
+        const lowBiased = Math.pow(p, 2.4);
+        const lowScore = Math.floor(lowBiased * 100); // 0..100
+        return Math.max(0, Math.min(100, lowScore));
+      } else if (r < 244){
+        // Mid bucket: map into 101..199
+        const midBiased = Math.pow(p, 1.6);
+        const midScore = 101 + Math.floor(midBiased * 99); // 101..199
+        return Math.max(101, Math.min(199, midScore));
+      } else {
+        // High bucket (rare): map into 200..500
+        const highPortion = Math.floor((normal / 500) * 301); // 0..300
+        const highScore = 200 + highPortion; // 200..500
+        return Math.max(200, Math.min(500, highScore));
+      }
+    }
+
+    function tierForScore(score){
+      if (score <= 20) return 'NOVICE';
+      if (score <= 100) return 'BREWER';
+      if (score <= 200) return 'ENTHUSIAST';
+      if (score <= 300) return 'MOKA';
+      if (score <= 400) return 'BOSS';
+      return 'MAXI';
+    }
+
+    function commentForScoreAndUser(username, score){
+      // case-insensitive check for special usernames
+      const lower = String(username || '').toLowerCase();
+      if (SPECIAL_COMMENTS_LOWER.hasOwnProperty(lower)) return SPECIAL_COMMENTS_LOWER[lower];
+      if (score <= 20) return "Hey, you need more caffeine 😒";
+      if (score <= 100) return "You're Brewing hot! 🌋";
+      if (score <= 200) return "ETH loves Espresso, so do you fren 😉";
+      if (score <= 300) return "Wow, straight out of a Moka pot! 🤯";
+      if (score <= 400) return "gEspresso Final Bossu 🔥";
+      return "god level Maxi 🐦‍🔥";
+    }
+
+    // Persistent storage helpers (top10, highest, last user, logo)
+    function readTop10(){ try { const r = JSON.parse(localStorage.getItem(STORAGE_TOP10) || '[]'); return Array.isArray(r)? r : []; } catch(e){ return []; } }
+    function writeTop10(arr){ try { localStorage.setItem(STORAGE_TOP10, JSON.stringify(arr)); // broadcast update (live)
+      broadcast({ type:'top10-update', data: arr });
+    } catch(e){} }
+    function readHighest(){ try { return parseInt(localStorage.getItem(STORAGE_KEY),10) || 0; } catch(e){ return 0; } }
+    function writeHighest(n){ try { localStorage.setItem(STORAGE_KEY, String(n)); broadcast({ type:'highest-update', data: n }); } catch(e){} }
+    function readLastUser(){ try { return localStorage.getItem(STORAGE_LAST_USER) || '—'; } catch(e){ return '—'; } }
+    function writeLastUser(name){ try { localStorage.setItem(STORAGE_LAST_USER, name); broadcast({ type:'last-user-update', data: name }); } catch(e){} }
+    function saveHeaderLogoDataURL(dataUrl){ try { localStorage.setItem(STORAGE_LOGO, dataUrl); broadcast({ type:'logo-update', data: dataUrl }); } catch(e){} }
+    function readHeaderLogoDataURL(){ try { return localStorage.getItem(STORAGE_LOGO) || ''; } catch(e){ return ''; } }
+
+    // broadcast helper (BroadcastChannel preferred, fallback to storage hack)
+    function broadcast(msg){
+      try {
+        if (bc) { bc.postMessage(msg); }
+        else {
+          // fallback: write to a volatile storage key; other tabs will get a storage event
+          localStorage.setItem('gespresso_broadcast_temp', JSON.stringify({msg, ts: Date.now()}));
+          // cleanup to avoid polluting storage (do asynchronously)
+          setTimeout(()=> {
+            try { localStorage.removeItem('gespresso_broadcast_temp'); } catch(e){}
+          }, 6000);
         }
-        result.textContent = 'Looking up ' + username + '…';
+      } catch(e){}
+    }
 
-        // Simulate lightweight lookup (replace with real fetch)
-        setTimeout(function () {
-          // Demo placeholder: random number returned
-          var count = Math.floor(Math.random() * 100);
-          result.textContent = username + ' mentioned gEspresso ' + count + ' time' + (count === 1 ? '' : 's') + ' on X.';
-        }, 600);
+    // update top10 UI and featured highest (dynamic)
+    function updateTop10UI(){
+      const arr = readTop10();
+      top10ListEl.innerHTML = '';
+      if (!arr || arr.length === 0){ top10ListEl.innerHTML = '<li style="color:#a98a6b">No entries yet. Brew your score to appear.</li>'; topNameEl.textContent = '—'; highestEl.textContent = '—'; return; }
+      arr.forEach(item=>{
+        const li = document.createElement('li');
+        const nameSpan = document.createElement('span'); nameSpan.className='name'; nameSpan.textContent = item.name;
+        const scoreSpan = document.createElement('span'); scoreSpan.className='score'; scoreSpan.textContent = String(item.score);
+        li.appendChild(nameSpan); li.appendChild(scoreSpan);
+        top10ListEl.appendChild(li);
       });
-    })();
+      // featured top is first entry (arr sorted desc)
+      const top = arr[0];
+      topNameEl.textContent = top.name;
+      highestEl.textContent = String(top.score);
+    }
+
+    // add/update top10 and keep sorted desc
+    function updateTop10With(username, score){
+      if (!username) return;
+      const arr = readTop10();
+      const filtered = arr.filter(e => e.name.toLowerCase() !== username.toLowerCase());
+      filtered.push({ name: username, score: score });
+      filtered.sort((a,b)=> b.score - a.score || a.name.localeCompare(b.name));
+      const top = filtered.slice(0,10);
+      writeTop10(top);
+      // update UI locally immediately
+      updateTop10UI();
+    }
+
+    // visual helpers: lights, steam, header alert
+    function setLights(state){
+      lights.forEach((el,i)=>{ el.classList.remove('on','pulse'); if (state==='warming' && i<2) { el.classList.add('on','pulse'); el.style.animationDelay=(i*70)+'ms'; } if(state==='brewing'){ el.classList.add('on','pulse'); el.style.animationDelay=(i*40)+'ms'; } if(state==='done'){ if(i%2===0) el.classList.add('on'); } });
+    }
+    function setSteam(state){ pixels.forEach((el,i)=>{ el.classList.remove('rise','gentle','fade'); el.style.animationDelay=''; if(state==='rising'){ el.classList.add('rise'); el.style.animationDelay=(i*120)+'ms'; } else if(state==='gentle'){ el.classList.add('gentle'); el.style.animationDelay=(i*90)+'ms'; } else if(state==='fade'){ el.classList.add('fade'); el.style.animationDelay=(i*60)+'ms'; } }); }
+    function setHeaderAlert(state){ if(!headerAlert) return; if(state==='on'){ headerAlert.style.boxShadow='0 6px 0 rgba(179,11,11,0.35)'; headerAlert.style.opacity='1'; headerAlert.style.transform='scale(1.03)'; headerAlert.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:600,iterations:Infinity,easing:'ease-in-out'}); } else { headerAlert.style.boxShadow=''; headerAlert.style.opacity='0.85'; headerAlert.getAnimations().forEach(a=>a.cancel()); headerAlert.style.transform=''; } }
+
+    // play a short "ping" using Web Audio API. returns a Promise resolved when finished.
+    function playPing() {
+      return new Promise((resolve) => {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now); // starting frequency
+          // quick frequency slide for a more pleasant ping
+          osc.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
+
+          gain.gain.setValueAtTime(0, now);
+          gain.gain.linearRampToValueAtTime(0.12, now + 0.005);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.19);
+
+          osc.onended = () => {
+            // Close the audio context to free resources (some browsers require a short delay)
+            try { ctx.close(); } catch(e){}
+            resolve();
+          };
+        } catch (e) {
+          // if WebAudio isn't available, resolve immediately (no sound)
+          resolve();
+        }
+      });
+    }
+
+    // brewer sequence (visuals) - now toggles .brewing on cup so cup shows steam animation
+    async function brewSequence(username){
+      setHeaderAlert('on');
+      // enable steam visuals (above cup) and cup steam
+      brewSteam.style.opacity = 1;
+      machineCup.classList.add('brewing'); // enables pseudo-element steam animation
+      setSteam('rising'); machineDisplay.textContent='Warming'; setLights('warming'); machineCup.style.transform='translateY(0)'; cupBase.style.transform='translateY(0)';
+      await new Promise(r=> setTimeout(r, 600 + Math.random()*300)); // trimmed for snappier UX on mobile
+      machineDisplay.textContent='Brewing'; setLights('brewing'); setSteam('rising');
+      const brewTime = 700 + Math.min(1200, String(username).length*140 + (hashStr(username||'') % 500));
+      let dots = 0;
+      const dotInterval = setInterval(()=>{ dots=(dots+1)%4; machineDisplay.textContent='Brewing'+'.'.repeat(dots); }, 380);
+      const bounce = setInterval(()=>{ const dy = -2 + Math.round(Math.random()*4); machineCup.style.transform = `translateY(${dy}px)`; cupBase.style.transform = `translateY(${Math.max(0,dy)}px)`; }, 150);
+      await new Promise(r=> setTimeout(r, brewTime));
+      clearInterval(dotInterval); clearInterval(bounce);
+      setLights('done'); setSteam('fade'); machineDisplay.textContent='Done';
+      setHeaderAlert('off');
+      // fade steam and remove cup brewing after a short delay
+      await new Promise(r=> setTimeout(r, 360));
+      brewSteam.style.opacity = 0;
+      machineCup.classList.remove('brewing');
+    }
+
+    // open popup and update records (also updates Top10)
+    async function openPopup(username){
+      await brewSequence(username);
+      overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false');
+      scoreEl.textContent='0';
+      popupUsernameEl.textContent = '@' + username;
+      tierEl.textContent=''; tierEl.classList.remove('show');
+      commentEl.textContent='Brewing your result…'; commentEl.classList.remove('show'); commentEl.setAttribute('aria-hidden','true');
+      shareRow.style.display='none'; logoLayer.innerHTML='';
+
+      // compute hash using lowercased username for consistency
+      const lowerUsername = String(username || '').toLowerCase();
+      const h = hashStr(lowerUsername);
+
+      // Detect special usernames (case-insensitive)
+      const isSpecial = SPECIAL_COMMENTS_LOWER.hasOwnProperty(lowerUsername);
+
+      // For non-special usernames preferLow=true so 0..100 bucket becomes most common (spread across 0..100)
+      let score = scoreFromHash(h, !isSpecial);
+
+      // Special usernames: deterministic boost into 340..500 (unchanged behavior)
+      if (isSpecial){
+        const boost = 340 + (h % 161); // 340..500 deterministic spread
+        score = Math.max(score, boost);
+      }
+
+      const countDuration = 700 + Math.min(1400, Math.round(score * 1.6)); // slightly faster on mobile
+
+      // Animate the count
+      await animateCount(score, countDuration);
+
+      // Play the ping to signal reveal (await to keep animation in sync)
+      await playPing();
+
+      // Then reveal tier/comment etc
+      const tier = tierForScore(score);
+      tierEl.textContent = tier; requestAnimationFrame(()=>{ tierEl.classList.add('show'); });
+      commentEl.textContent = commentForScoreAndUser(username, score);
+      commentEl.classList.add('show'); commentEl.setAttribute('aria-hidden','false');
+
+      // Persist results and broadcast to other windows so leaderboard and highest are live
+      const prevHighest = readHighest();
+      if (score > prevHighest){ writeHighest(score); } // writeHighest will broadcast
+      writeLastUser(username); // broadcasts
+      updateTop10With(username, score); // writes and broadcasts
+      shareRow.style.display='flex';
+      shareBtn.onclick = ()=> {
+        const txt = `I just checked my score on the Espresso machine, and I've said ${score} gEspressos so far 😁, can you beat it? Check yours! ${window.location.href}`;
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(txt)}`;
+        window.open(url, '_blank', 'noopener');
+      };
+      downloadBtn.onclick = ()=> createAndDownloadScoreImage(username, score, tier);
+    }
+
+    function closePopup(){
+      overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); logoLayer.innerHTML=''; scoreEl.textContent='0'; popupUsernameEl.textContent='—';
+      tierEl.textContent=''; tierEl.classList.remove('show'); commentEl.textContent=''; shareRow.style.display='none'; machineDisplay.textContent='Espresso Machine'; setLights('idle'); setSteam('fade'); machineCup.style.transform=''; cupBase.style.transform=''; brewSteam.style.opacity = 0; setHeaderAlert('off');
+    }
+
+    // counting animation (non-blocking)
+    function animateCount(to, duration = 900){
+      const start = performance.now(); const from = 0; const diff = to - from;
+      return new Promise(resolve=>{
+        function step(now){
+          const elapsed = now - start;
+          const tRaw = Math.min(elapsed / duration, 1);
+          const t = 1 - Math.pow(1 - tRaw, 3);
+          const val = Math.round(from + diff * t);
+          scoreEl.textContent = String(val);
+          if (elapsed < duration) requestAnimationFrame(step);
+          else { scoreEl.textContent = String(to); resolve(); }
+        }
+        requestAnimationFrame(step);
+      });
+    }
+
+    // image generation: include header logo if provided (kept softened)
+    function createAndDownloadScoreImage(username, score, tier) {
+      const width = 1400; const height = 700;
+      const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+
+      // background
+      const g = ctx.createLinearGradient(0,0,0,height); g.addColorStop(0, '#3b2314'); g.addColorStop(1, '#23110a'); ctx.fillStyle = g; ctx.fillRect(0,0,width,height);
+      const grain = ctx.createImageData(100,100);
+      for (let i=0;i<grain.data.length;i+=4){ const v=230+Math.floor(Math.random()*20); grain.data[i]=v; grain.data[i+1]=v; grain.data[i+2]=v; grain.data[i+3]=6; }
+      for (let y=0;y<height;y+=100){ for (let x=0;x<width;x+=100){ ctx.putImageData(grain,x,y); } }
+      ctx.fillStyle='rgba(0,0,0,0.15)'; ctx.beginPath(); ctx.ellipse(width/2,height/2,width/2.2,height/2.4,0,0,Math.PI*2); ctx.fill();
+
+      // header
+      const storedLogo = readHeaderLogoDataURL();
+      ctx.fillStyle='rgba(255,255,255,0.04)'; ctx.fillRect(30,24,width-60,96); ctx.strokeStyle='rgba(0,0,0,0.45)'; ctx.lineWidth=4; ctx.strokeRect(30,24,width-60,96);
+      const headerPaddingLeft = 48, headerLogoSize = 72, headerTextX = headerPaddingLeft + headerLogoSize + 18;
+      if (storedLogo){
+        const img = new Image(); img.onload = ()=> {
+          roundRect(ctx, headerPaddingLeft,36,headerLogoSize,headerLogoSize,12,true,false);
+          try { ctx.drawImage(img, headerPaddingLeft+6,36+6,headerLogoSize-12,headerLogoSize-12); } catch(e){}
+          ctx.fillStyle='#f6ead4'; ctx.font='700 28px "Press Start 2P", monospace'; ctx.textBaseline='middle'; ctx.fillText('gEspresso Checkpoint', headerTextX, 36 + headerLogoSize/2);
+          finalizeAndExport();
+        }; img.onerror = ()=> { finalizeAndExport(); }; img.src = storedLogo;
+      } else {
+        // If no stored logo, fall back to the bundled path in main/espresso-logo.png
+        const bundled = 'main/espresso-logo.png';
+        const img = new Image();
+        img.onload = () => {
+          roundRect(ctx, headerPaddingLeft,36,headerLogoSize,headerLogoSize,12,true,false);
+          try { ctx.drawImage(img, headerPaddingLeft+6,36+6,headerLogoSize-12,headerLogoSize-12); } catch(e){}
+          ctx.fillStyle='#f6ead4'; ctx.font='700 28px "Press Start 2P", monospace'; ctx.textBaseline='middle'; ctx.fillText('gEspresso Checkpoint', headerTextX, 36 + headerLogoSize/2);
+          finalizeAndExport();
+        };
+        img.onerror = () => {
+          // Fallback visual if bundled image isn't available
+          ctx.save(); ctx.fillStyle='#c28e64'; roundRect(ctx, headerPaddingLeft,36,headerLogoSize,headerLogoSize,12,true,false); ctx.fillStyle='#402512'; ctx.font='bold 20px "Press Start 2P", monospace'; ctx.fillText('E', headerPaddingLeft+22, 36+44); ctx.restore();
+          ctx.fillStyle='#f6ead4'; ctx.font='700 28px "Press Start 2P", monospace'; ctx.textBaseline='middle'; ctx.fillText('gEspresso Checkpoint', headerTextX, 36 + headerLogoSize/2);
+          finalizeAndExport();
+        };
+        img.src = bundled;
+      }
+
+      function finalizeAndExport(){
+        ctx.fillStyle='#ffdcb8'; ctx.font='800 44px "Press Start 2P", monospace'; ctx.fillText('@' + username, 70, 200);
+        ctx.save(); ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='900 140px "Press Start 2P", monospace'; const scoreText=String(score); const scoreWidth=ctx.measureText(scoreText).width; ctx.fillText(scoreText,(width-scoreWidth)/2+6,360+6); ctx.fillStyle='#d4a762'; ctx.font='900 140px "Press Start 2P", monospace'; ctx.fillText(scoreText,(width-scoreWidth)/2,360); ctx.restore();
+        ctx.fillStyle='#f0e3c9'; ctx.font='700 20px "Press Start 2P", monospace'; const suffix='gEspresso'; const suffixWidth=ctx.measureText(suffix).width; ctx.fillText(suffix,(width-suffixWidth)/2,440);
+        const boxW=320, boxH=110, boxX=width-boxW-70, boxY=180; ctx.fillStyle='rgba(0,0,0,0.45)'; roundRect(ctx,boxX,boxY,boxW,boxH,14,true,false); ctx.fillStyle='#c59a6f'; roundRect(ctx,boxX+8,boxY+8,boxW-16,boxH-16,10,true,false); ctx.fillStyle='#2b1509'; ctx.font='900 36px "Press Start 2P", monospace'; const tierText=String(tier||''); const tw=ctx.measureText(tierText).width; ctx.fillText(tierText, boxX+(boxW-tw)/2, boxY+58);
+        ctx.fillStyle='#cdb58f'; ctx.font='700 16px "Press Start 2P", monospace'; const note='Brewed with gEspresso Checkpoint'; ctx.fillText(note,70,height-60);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.92); const a = document.createElement('a'); a.href=dataUrl; const cleanName=(username||'user').replace(/[^a-z0-9_\-]/ig,'_'); a.download = `${cleanName}_gEspresso_${score}.jpg`; document.body.appendChild(a); a.click(); a.remove();
+      }
+    }
+
+    // rounded rect helper
+    function roundRect(ctx,x,y,w,h,r,fill,stroke){ if(typeof r==='undefined') r=5; if(typeof r==='number') r={tl:r,tr:r,br:r,bl:r}; ctx.beginPath(); ctx.moveTo(x+r.tl,y); ctx.lineTo(x+w-r.tr,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr); ctx.lineTo(x+w,y+h-r.br); ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h); ctx.lineTo(x+r.bl,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl); ctx.lineTo(x,y+r.tl); ctx.quadraticCurveTo(x,y,x+r.tl,y); ctx.closePath(); if(fill) ctx.fill(); if(stroke) ctx.stroke(); }
+
+    // interactions & wiring
+    function handleBrewAction(){ const username = input.value.trim(); if(!username){ input.focus(); return; } brewHandle.classList.add('pressed'); openPopup(username).finally(()=> setTimeout(()=> brewHandle.classList.remove('pressed'), 520)); }
+    brewHandle.addEventListener('click', e=>{ e.preventDefault(); handleBrewAction(); });
+    brewHandle.addEventListener('mousedown', ()=> brewHandle.classList.add('pressed'));
+    brewHandle.addEventListener('mouseleave', ()=> brewHandle.classList.remove('pressed'));
+    brewHandle.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); brewHandle.classList.add('pressed'); setTimeout(()=> brewHandle.classList.remove('pressed'),180); handleBrewAction(); }}); 
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); brewHandle.classList.add('pressed'); setTimeout(()=> brewHandle.classList.remove('pressed'),160); handleBrewAction(); }});
+
+    popupClose.addEventListener('click', closePopup); closeBtn.addEventListener('click', closePopup); overlay.addEventListener('click', e=> { if(e.target===overlay) closePopup(); }); document.addEventListener('keydown', e=>{ if(e.key==='Escape' && overlay.classList.contains('active')) closePopup(); });
+
+    dontClickBtn.addEventListener('click', ()=>{ const open = hiddenBlurb.style.display !== 'block'; if(open){ hiddenBlurb.style.display='block'; dontClickBtn.textContent="You shouldn't have clicked"; dontClickBtn.setAttribute('aria-expanded','true'); } else { hiddenBlurb.style.display='none'; dontClickBtn.textContent="Don't click me"; dontClickBtn.setAttribute('aria-expanded','false'); } });
+
+    headerLogo.addEventListener('click', ()=> logoFileInput.click());
+    logoFileInput.addEventListener('change', e=>{ const f = e.target.files && e.target.files[0]; if(!f) return; const reader = new FileReader(); reader.onload = ()=>{ const dataUrl = reader.result; headerLogo.src = dataUrl; headerLogo.classList.remove('empty'); saveHeaderLogoDataURL(dataUrl); }; reader.readAsDataURL(f); });
+
+    // Live update listeners (BroadcastChannel and storage)
+    function handleBroadcastMessage(msg){
+      try {
+        if (!msg || !msg.type) return;
+        if (msg.type === 'top10-update') {
+          // Another tab updated top10 -> refresh UI
+          updateTop10UI();
+        } else if (msg.type === 'highest-update') {
+          const val = parseInt(localStorage.getItem(STORAGE_KEY),10) || 0;
+          highestEl.textContent = val ? String(val) : '—';
+        } else if (msg.type === 'last-user-update') {
+          const l = localStorage.getItem(STORAGE_LAST_USER) || '—';
+          lastUserEl.textContent = 'last checked: ' + l;
+        } else if (msg.type === 'logo-update') {
+          const l = localStorage.getItem(STORAGE_LOGO) || '';
+          if (l){ headerLogo.src = l; headerLogo.classList.remove('empty'); }
+        }
+      } catch(e){}
+    }
+
+    if (bc) {
+      bc.onmessage = (ev) => { handleBroadcastMessage(ev.data); };
+    }
+    // storage event fallback / additional listener for other browsers
+    window.addEventListener('storage', (ev) => {
+      // Ignore events originating from this page (they still fire), but handle relevant keys
+      if (!ev.key) return;
+      if (ev.key === STORAGE_TOP10 || ev.key === 'gespresso_broadcast_temp') {
+        updateTop10UI();
+      } else if (ev.key === STORAGE_KEY) {
+        highestEl.textContent = (parseInt(ev.newValue,10) || 0) ? String(parseInt(ev.newValue,10)) : '—';
+      } else if (ev.key === STORAGE_LAST_USER) {
+        lastUserEl.textContent = 'last checked: ' + (ev.newValue || '—');
+      } else if (ev.key === STORAGE_LOGO) {
+        if (ev.newValue){ headerLogo.src = ev.newValue; headerLogo.classList.remove('empty'); }
+      }
+    });
+
+    // initialize UI from storage and ensure it's live
+    document.addEventListener('DOMContentLoaded', ()=>{ 
+      updateTop10UI(); 
+      const storedLogo = readHeaderLogoDataURL();
+      if(storedLogo){
+        headerLogo.src = storedLogo;
+        headerLogo.classList.remove('empty');
+      } else {
+        // default bundled image placed in main/espresso-logo.png (per your request)
+        headerLogo.src = 'main/espresso-logo.png';
+        headerLogo.classList.remove('empty');
+      }
+      setHeaderAlert('off'); machineDisplay.textContent='Espresso Machine'; setLights('idle'); setSteam('fade'); brewSteam.style.opacity=0; machineCup.style.opacity=0.98; cupBase.style.opacity=1; document.getElementById('last-user').textContent = 'last checked: ' + (readLastUser()||'—');
+      const h = readHighest(); highestEl.textContent = h ? String(h) : '—';
+
+      // small accessibility improvement: enable proper tapping target for brew on touch devices
+      if ('ontouchstart' in window) {
+        brewHandle.style.touchAction = 'manipulation';
+      }
+    });
+
+    // expose for debugging if needed (kept minimal)
+    window._gespresso = { SPECIAL_COMMENTS, SPECIAL_COMMENTS_LOWER, hashStr, scoreFromHash, tierForScore, updateTop10With, readTop10, playPing };
+
   </script>
 </body>
 </html>
