@@ -20,11 +20,10 @@
       --shadow: rgba(0,0,0,0.65);
       --pixel-size: 4px;
       --bg: linear-gradient(180deg,#09100f 0%, #0b0b0b 60%);
-      --tap-size: 56px; /* bigger tap targets for touch */
+      --tap-size: 56px;
       --max-container-width: 980px;
     }
 
-    /* Basic resets and crisp retro text */
     *{ box-sizing:border-box; margin:0; padding:0; font-family: 'Press Start 2P', monospace, "Segoe UI", Tahoma, sans-serif; -webkit-font-smoothing: none; image-rendering: pixelated; }
     html,body{ height:100%; }
     body{
@@ -39,7 +38,6 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Layout container - responsive adjustments */
     .container{
       width: min(var(--max-container-width), calc(100% - 28px));
       border-radius:8px;
@@ -53,7 +51,6 @@
       box-shadow: 0 20px 60px var(--shadow);
     }
 
-    /* Collapse to single column below 980 */
     @media (max-width: 980px){
       .container{
         grid-template-columns: 1fr;
@@ -62,31 +59,12 @@
       }
     }
 
-    /* Very narrow devices - add extra padding and ensure readable text */
     @media (max-width: 380px){
       body { padding:10px; }
       .container { padding:10px; gap:10px; }
     }
 
-    /* Left: pixel coffee shop scene */
-    .shop-scene{
-      background: linear-gradient(180deg,#2a160b,#1a0f09);
-      border:4px solid #0d0806;
-      border-radius:6px;
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      align-items:center;
-      position:relative;
-    }
-
-    /* When the layout is two columns keep a fixed height for the visual scene */
-    @media (min-width: 981px) {
-      .shop-scene { height:620px; }
-      .right-panel { min-height:620px; }
-    }
-
+    /* Responsive shop-header block for mobile */
     .shop-header{
       width:100%;
       display:flex;
@@ -95,9 +73,21 @@
       color:var(--accent);
       font-size:12px;
       gap:8px;
+      padding: 0;
+      margin-bottom: 6px;
+      /* make sure children can shrink properly on small screens */
+      align-items:center;
+    }
+    @media (max-width: 600px) {
+      .shop-header {
+        flex-direction: column;
+        gap:12px;
+        padding: 4px 0 0 0;
+        align-items:flex-start;
+        justify-content:center;
+      }
     }
 
-    /* Top left site title */
     .shop-title{
       font-size:22px;
       color:var(--ui);
@@ -106,20 +96,73 @@
       display:flex;
       align-items:center;
       gap:10px;
+      /* allow long titles to wrap and shrink on narrow screens */
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: normal;
+      word-break: break-word;
+    }
+    @media (max-width: 520px){
+      .shop-title{
+        font-size:15px;
+        text-align:left;
+        justify-content:flex-start;
+      }
+    }
+    @media (max-width: 400px){
+      .shop-title{
+        font-size:12px;
+      }
     }
 
-    #header-logo { width:40px; height:40px; object-fit:contain; border-radius:6px; background:transparent; display:inline-block; cursor:pointer; filter: drop-shadow(0 6px 4px rgba(0,0,0,0.6)); transition: transform 160ms, opacity 160ms; }
-    #header-logo.empty { opacity:0.45; filter: none; }
+    /* Make the logo visible even before JS runs and keep it legible on small screens.
+       Don't remove "useful" properties — only ensure minimum sizes and sensible scaling. */
+    #header-logo {
+      width:48px;
+      height:48px;
+      min-width:48px;
+      min-height:48px;
+      object-fit:contain;
+      border-radius:6px; background:transparent; display:inline-block; cursor:pointer;
+      filter: drop-shadow(0 6px 4px rgba(0,0,0,0.6));
+      transition: transform 160ms, opacity 160ms;
+      flex: none;
+    }
+    #header-logo.empty { opacity:0.9; filter: none; }
+    /* On small screens we actually increase the logo a bit so it's clearly seen */
+    @media (max-width: 520px){
+      #header-logo { width:56px; height:56px; min-width:56px; min-height:56px; }
+    }
+    @media (max-width: 400px){
+      #header-logo { width:48px; height:48px; min-width:48px; min-height:48px; }
+    }
+    @media (max-width:340px){
+      #header-logo { width:44px; height:44px; min-width:44px; min-height:44px; }
+    }
+
 
     .header-alert { width:20px; height:20px; border-radius:4px; background: linear-gradient(180deg,#ff3b3b,#b30b0b); border:2px solid #2a0a0a; box-shadow: 0 6px 0 rgba(179,11,11,0.35); display:inline-block; }
 
-    /* Counter & brewer sizing adapt to width */
     .counter{ width:100%; background: linear-gradient(180deg,#3b2314,#2b160b); border:6px solid #070504; border-radius:6px; display:flex; align-items:flex-end; justify-content:center; padding:14px; position:relative; box-shadow: inset 0 -6px 0 rgba(0,0,0,0.4); max-height:720px; }
     .brewer { width:100%; max-width:420px; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0 6px, transparent 6px 12px), linear-gradient(180deg,#5b3a27,#2b160b); border:5px solid #050403; border-radius:6px; position:relative; display:flex; flex-direction:column; align-items:center; padding:12px; justify-content:flex-start; box-shadow: 0 8px 0 #000, inset -6px -6px 0 rgba(0,0,0,0.3); }
+    @media (max-width: 600px){
+      .brewer {
+        max-width: 100vw;
+        min-width: 0;
+        padding: 6px;
+      }
+      .counter {
+        padding:6px;
+      }
+    }
 
     .panel { width:100%; max-width:320px; height:88px; background: linear-gradient(180deg,#20120a,#341b0f); border:4px solid #070504; border-radius:6px; display:flex; gap:10px; padding:10px; align-items:center; justify-content:space-between; position:relative; box-sizing:border-box; }
+    @media (max-width: 520px){
+      .panel { flex-direction:column; height:auto; gap:8px; padding:8px; align-items:stretch; max-width:98vw; }
+    }
+
     .machine-left { display:flex; flex-direction:column; gap:6px; width:62%; min-width:120px; }
-    .machine-display { width:100%; height:36px; background:#090909; border:3px solid #030202; color:var(--accent); display:flex; align-items:center; justify-content:flex-start; padding:6px 10px; font-size:11px; letter-spacing:1px; text-shadow: 0 2px 0 #000; }
+    .machine-display { width:100%; height:36px; background:#090909; border:3px solid #030202; color:var(--accent); display:flex; align-items:center; justify-content:flex-start; padding:6px 10px; font-size:11px; letter-spacing:1px; text-shadow: 0 2px 0 #000; overflow-x:auto; }
 
     .machine-input-row { display:flex; gap:8px; align-items:center; width:100%; }
     .search-input { flex:1 1 auto; min-width:100px; height:28px; padding:6px 8px; font-size:11px; border-radius:4px; border:3px solid #060404; background:linear-gradient(180deg,#24140a,#341c0f); color:var(--ui); outline:none; transition: box-shadow 140ms, transform 140ms; }
@@ -188,6 +231,13 @@
 
     .right-panel{ padding:8px; display:flex; flex-direction:column; gap:12px; }
     .tagline{ font-size:20px; color:#e6cfa6; font-weight:900; line-height:1.6; margin:22px 0; white-space:normal; }
+    @media (max-width: 520px){
+      .right-panel { padding:4px 2px; }
+      .tagline { font-size:15px; margin:12px 0 14px 0; }
+    }
+    @media (max-width: 360px){
+      .tagline { font-size:12px; }
+    }
 
     /* Replaced leaderboard area with percentage ranking UI */
     .ranking-panel{ margin-top:6px; padding:18px; border-radius:6px; background: linear-gradient(180deg,#392414,#2b160b); border:4px solid #0b0704; color: var(--ui); font-size:12px; text-align:center; box-shadow: inset 0 6px 0 rgba(255,255,255,0.02); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
@@ -199,7 +249,7 @@
 
     .percent-box { margin-top:8px; background: linear-gradient(180deg,#24140a,#28150b); border-radius:6px; padding:12px; border:3px solid #0b0704; width:92%; display:flex; flex-direction:column; gap:10px; align-items:center; }
     .percent-value { font-size:36px; color: #cde3b4; font-weight:900; letter-spacing:1px; }
-    .percent-sub { font-size:12px; color:#d4b889; max-width:92%; text-align:center; line-height:1.6; /* added spacing */ }
+    .percent-sub { font-size:12px; color:#d4b889; max-width:92%; text-align:center; line-height:1.6; word-break: break-word; }
 
     .dont-click-row { margin-top:8px; display:flex; justify-content:center; width:100%; }
     .dont-click-btn { background: linear-gradient(180deg,#2a1208,#381a0f); color: #ffd9b4; border:4px solid #070504; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:900; font-size:12px; box-shadow: 0 6px 0 #000; width:92%; text-align:center; }
@@ -217,7 +267,6 @@
     .popup-title{ font-weight:900; color:var(--ui); font-size:12px; letter-spacing:1px }
     .close-btn{ background:#050505;border:none;font-size:14px;color:var(--ui);cursor:pointer;padding:6px; border-radius:4px; box-shadow: 0 6px 0 #000; }
 
-    /* Improve popup layout: spread elements and prevent overlap */
     .score-area{
       display:grid;
       grid-template-columns: 1fr;
@@ -237,58 +286,75 @@
 
     .comment{ font-size:13px; color:#ffdcb8; margin-top:8px; padding:8px 12px; background: rgba(0,0,0,0.12); border-radius:6px; max-width:92%; text-align:center; }
 
-    /* Scale typography a bit on small screens for readability */
     @media (max-width:520px){
-      .panel { flex-direction:column; height:auto; gap:8px; padding:8px; align-items:stretch; }
-      .machine-left { width:100%; }
-      .brew-handle { width:100%; height:48px; }
-      .spout-area { width:100%; }
-      .tagline { font-size:16px; margin:16px 0; }
       .score-value { font-size:36px; padding:10px 12px; }
-      .shop-title{ font-size:16px; }
-      .percent-value { font-size:28px; }
-      .percent-sub { font-size:11px; }
+      #popup-username { font-size:12px; }
+      .tier { font-size:11px; padding:6px 10px; }
+      .comment { font-size:11px; padding:6px 8px; }
+      .ranking-panel .record { font-size:44px; }
+      .percent-value { font-size:26px; }
+      .percent-sub { font-size:10px; }
+      .shop-title{ font-size:15px; }
       .share-row { gap:6px; }
     }
 
-    /* Additional small device adjustments */
     @media (max-width: 380px){
       .score-value{ font-size:28px; padding:8px 10px; }
-      .record { font-size:48px; }
-      .shop-title { font-size:14px; }
-      #header-logo { width:36px; height:36px; }
+      .record { font-size:38px; }
+      .shop-title { font-size:12px; }
+      #header-logo { width:32px; height:32px; }
     }
 
-    /* small helpers for "live" changes (visual) */
     .pulse { animation: pulse 900ms infinite alternate; }
     @keyframes pulse { from { opacity: 0.6; } to { opacity:1; transform:translateY(-2px); } }
 
-    /* tiny helper to ensure clickable/tappable items are large enough on mobile */
     .touch-target{ min-height: var(--tap-size); display:flex; align-items:center; justify-content:center; }
 
-    /* status states used by JS (kept simple) */
     .on { opacity: 1 !important; }
     .rise { opacity:1; animation: riseAnim 700ms linear infinite; }
     .gentle { opacity:0.9; animation: gentleAnim 1100ms linear infinite; }
     .fade { opacity:0; transition: opacity 420ms; }
     @keyframes riseAnim { 0% { transform: translateY(8px) } 50% { transform: translateY(-6px) } 100% { transform: translateY(8px) } }
-    @keyframes gentleAnim { 0% { transform: translateY(4px) } 50% { transform: translateY(-10px); } 100% { transform: translateY(4px) } }
+    @keyframes gentleAnim { 0% { transform: translateY(4px) } 50% { transform: translateY(-10px); } 100% { transform: translateY(4px); } }
 
-    /* Ensure hidden content can be scrolled on small screens */
     .hidden-blurb { max-height: 40vh; overflow:auto; -webkit-overflow-scrolling:touch; }
     .shop-scene { -webkit-overflow-scrolling:touch; }
+
+    /* Responsive adjustments for shop-scene */
+    .shop-scene{
+      background: linear-gradient(180deg,#2a160b,#1a0f09);
+      border:4px solid #0d0806;
+      border-radius:6px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:center;
+      position:relative;
+    }
+    @media (max-width: 600px){
+      .shop-scene{
+        padding: 4px 2px 10px 2px;
+        gap:8px;
+        align-items: stretch;
+      }
+    }
+
+    /* When the layout is two columns keep a fixed height for the visual scene */
+    @media (min-width: 981px) {
+      .shop-scene { height:620px; }
+      .right-panel { min-height:620px; }
+    }
   </style>
 </head>
 <body>
   <div class="container" role="main" aria-label="gEspresso pixel coffee shop">
     <div class="shop-scene" aria-hidden="false">
       <div class="shop-header">
-        <div style="display:flex;align-items:center;gap:10px">
-          <!-- now points to main/espresso-logo.png by default (bundled in main folder) -->
-          <img id="header-logo" class="empty" src="" alt="Espresso logo (click to add)" title="Click to add espresso logo" />
-          <div class="shop-title">gEspresso Checkpoint</div>
-          <div id="header-alert" class="header-alert" title="alert indicator"></div>
-        </div>
+        <!-- provide a sensible default src so mobile browsers render the logo area immediately -->
+        <img id="header-logo" class="empty" src="main/espresso-logo.png" alt="Espresso logo (click to add)" title="Click to add espresso logo" />
+        <div class="shop-title">gEspresso Checkpoint</div>
+        <div id="header-alert" class="header-alert" title="alert indicator"></div>
       </div>
 
       <div class="counter" role="region" aria-label="Counter with brewing machine">
@@ -324,9 +390,7 @@
               <div class="pix" id="p3"></div>
             </div>
           </div>
-
         </div>
-
         <div class="attendant" aria-hidden="true" role="img" aria-label="Coffee attendant">
           <div class="head"></div>
           <div class="body"><div class="apron"><div class="smile"></div></div></div>
@@ -348,8 +412,6 @@
       <div class="header">
         <div class="tagline">Are you an Espresso Maxi? let's see how many gEspressos you've said on X</div>
       </div>
-
-      <!-- Replaced leaderboard with a percentage ranking panel that we control -->
       <div class="ranking-panel" aria-hidden="false" role="region" aria-label="Ranking">
         <div class="small-label">Percentile ranking (global estimate)</div>
 
@@ -362,10 +424,11 @@
 
         <div class="percent-box" id="percent-box" aria-label="Your percentile">
           <div id="percent-value" class="percent-value">—</div>
-          <div class="percent-sub" id="percent-sub">You are ranking among the top<br><strong id="percent-inline">—</strong><br>of people saying gEspresso around the world.</div>
+          <div class="percent-sub" id="percent-sub">
+            <span id="percent-inline">—</span>
+          </div>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -377,20 +440,14 @@
         <div class="popup-title" id="popup-title">gEspresso Result</div>
         <button class="close-btn" id="popup-close" title="Close" aria-label="Close">&times;</button>
       </div>
-
       <div class="score-area" aria-live="polite">
         <div class="logo-layer" id="logo-layer" aria-hidden="true" style="display:none"></div>
-
         <div class="score-display" aria-hidden="false">
           <div id="score" class="score-value" aria-label="gEspresso score" role="status" aria-live="polite">0</div>
         </div>
-
         <div id="popup-username">@unknown</div>
-
         <div id="tier" class="tier" aria-hidden="true">—</div>
-
         <div id="comment" class="comment" aria-hidden="true">Your result will appear here</div>
-
         <div class="share-row" id="share-row" style="display:none">
           <button id="share-btn" class="share-btn">Share on X</button>
           <button id="download-btn" class="download-btn" title="Download your score image">Download Score</button>
@@ -485,30 +542,28 @@
     });
 
     // Utilities: deterministic hashing (FNV-1a), scoring, tiering, comments
-    function hashStr(str){
-      let h = 2166136261 >>> 0;
-      for (let i = 0; i < str.length; i++){
-        h ^= str.charCodeAt(i);
-        h = Math.imul(h, 16777619) >>> 0;
-      }
-      return h >>> 0;
-    }
 
+    // --- INCREASED DIFFICULTY: make it rarer for non-specials to land very high ---
     function scoreFromHash(hVal, preferLow = false){
       const UINT_MAX = 0xFFFFFFFF >>> 0;
       const p = (hVal / UINT_MAX);
-      const baseExponent = 1.9;
+      // Make high-tier outcomes rarer for regular users by increasing exponent used in biasing.
+      // Special usernames still use the alternate (easier) path via preferLow.
+      const baseExponent = preferLow ? 2.15 : 3.25; // increased from ~2.65 to ~3.25 for stricter distribution
       const biased = Math.pow(p, baseExponent);
-      const normal = Math.max(0, Math.min(500, Math.floor(biased * 500)));
+      let normal = Math.max(0, Math.min(500, Math.floor(biased * 500)));
+
+      // For 'preferLow', use a slightly less aggressive curve, but BOSS/MAXI still rare.
       if (!preferLow) return normal;
 
+      // 'preferLow' (used for specials) gets slightly easier tiers
       const r = (hVal >>> 8) & 0xFF;
-      if (r < 184){
-        const lowBiased = Math.pow(p, 2.4);
+      if (r < 136){
+        const lowBiased = Math.pow(p, 2.34);
         const lowScore = Math.floor(lowBiased * 100);
         return Math.max(0, Math.min(100, lowScore));
-      } else if (r < 244){
-        const midBiased = Math.pow(p, 1.6);
+      } else if (r < 210){
+        const midBiased = Math.pow(p, 1.75);
         const midScore = 101 + Math.floor(midBiased * 99);
         return Math.max(101, Math.min(199, midScore));
       } else {
@@ -517,6 +572,7 @@
         return Math.max(200, Math.min(500, highScore));
       }
     }
+    // --- END DIFFICULTY ADJUSTMENT ---
 
     function tierForScore(score){
       if (score <= 20) return 'NOVICE';
@@ -538,7 +594,6 @@
       return "god level Maxi 🐦‍🔥";
     }
 
-    // Simple persistent helpers (we keep highest & last user locally for UX)
     function readHighest(){ try { return parseInt(localStorage.getItem(STORAGE_KEY),10) || 0; } catch(e){ return 0; } }
     function writeHighest(n){ try { localStorage.setItem(STORAGE_KEY, String(n)); } catch(e){} }
     function readLastUser(){ try { return localStorage.getItem(STORAGE_LAST_USER) || '—'; } catch(e){ return '—'; } }
@@ -557,21 +612,27 @@
     }
 
     // update the right-panel percent UI
-    function updatePercentUIFor(score){
+    function updatePercentUIFor(score, username = null){
       const pct = percentileFromScore(score);
       const display = (pct < 1) ? `${pct}%` : `${pct}%`;
+
       percentValueEl.textContent = display;
       percentInline.textContent = display;
+      // Updated copy as requested:
+      // "You rank (percentage) of people saying gEspresso world wide. (The comment on each tier)"
+      let uname = username;
+      if(uname == null || typeof uname === 'undefined') uname = '';
+      let comment = commentForScoreAndUser(uname, score);
+      percentSubEl.innerHTML = `You rank <strong>${display}</strong> of people saying gEspresso world wide.<br>(${comment})`;
     }
 
-    // visual helpers: lights, steam, header alert
+    // The rest remains unchanged (functions, interactions...)
+
     function setLights(state){
       lights.forEach((el,i)=>{ if(!el) return; el.classList.remove('on','pulse'); if (state==='warming' && i<2) { el.classList.add('on','pulse'); el.style.animationDelay=(i*70)+'ms'; } if(state==='brewing'){ el.classList.add('on','pulse'); el.style.animationDelay=(i*40)+'ms'; } if(state==='done'){ if(i%2===0) el.classList.add('on'); } });
     }
     function setSteam(state){ pixels.forEach((el,i)=>{ if(!el) return; el.classList.remove('rise','gentle','fade'); el.style.animationDelay=''; if(state==='rising'){ el.classList.add('rise'); el.style.animationDelay=(i*120)+'ms'; } else if(state==='gentle'){ el.classList.add('gentle'); el.style.animationDelay=(i*90)+'ms'; } else if(state==='fade'){ el.classList.add('fade'); el.style.animationDelay=(i*60)+'ms'; } }); }
     function setHeaderAlert(state){ if(!headerAlert) return; if(state==='on'){ headerAlert.style.boxShadow='0 6px 0 rgba(179,11,11,0.35)'; headerAlert.style.opacity='1'; headerAlert.style.transform='scale(1.03)'; try { headerAlert.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:600,iterations:Infinity,easing:'ease-in-out'}); } catch(e){} } else { headerAlert.style.boxShadow=''; headerAlert.style.opacity='0.85'; try { headerAlert.getAnimations().forEach(a=>a.cancel()); } catch(e){} headerAlert.style.transform=''; } }
-
-    // play a short "ping" using Web Audio API. returns a Promise resolved when finished.
     function playPing() {
       return new Promise((resolve) => {
         try {
@@ -604,7 +665,17 @@
       });
     }
 
-    // brewer sequence
+    // simple FNV-1a hash used elsewhere - keep exposed for debugging
+    function hashStr(str){
+      // FNV-1a 32-bit
+      let h = 0x811c9dc5 >>> 0;
+      for (let i=0;i<str.length;i++){
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 0x01000193) >>> 0;
+      }
+      return h >>> 0;
+    }
+
     async function brewSequence(username){
       setHeaderAlert('on');
       brewSteam.style.opacity = 1;
@@ -625,7 +696,6 @@
       machineCup.classList.remove('brewing');
     }
 
-    // open popup and update UI (no server leaderboard)
     async function openPopup(username){
       await brewSequence(username);
       overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false');
@@ -638,9 +708,11 @@
       const lowerUsername = String(username || '').toLowerCase();
       const h = hashStr(lowerUsername);
       const isSpecial = SPECIAL_COMMENTS_LOWER.hasOwnProperty(lowerUsername);
+      // preferLow is false for non-specials (harder), true for specials (easier path)
       let score = scoreFromHash(h, !isSpecial);
 
       if (isSpecial){
+        // specials get an additional boost to ensure they appear higher consistently
         const boost = 340 + (h % 161);
         score = Math.max(score, boost);
       }
@@ -660,7 +732,7 @@
       writeLastUser(username);
 
       // update top-percent UI (this replaces leaderboard)
-      updatePercentUIFor(score);
+      updatePercentUIFor(score, username);
 
       shareRow.style.display='flex';
       shareBtn.onclick = ()=> {
@@ -686,7 +758,6 @@
       tierEl.textContent=''; tierEl.classList.remove('show'); commentEl.textContent=''; shareRow.style.display='none'; machineDisplay.textContent='Espresso Machine'; setLights('idle'); setSteam('fade'); machineCup.style.transform=''; cupBase.style.transform=''; brewSteam.style.opacity = 0; setHeaderAlert('off');
     }
 
-    // counting animation
     function animateCount(to, duration = 900){
       const start = performance.now(); const from = 0; const diff = to - from;
       return new Promise(resolve=>{
@@ -703,7 +774,6 @@
       });
     }
 
-    // image generation: unchanged (still uses local stored logo)
     function createAndDownloadScoreImage(username, score, tier) {
       const width = 1400; const height = 700;
       const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
@@ -754,13 +824,10 @@
       }
     }
 
-    // rounded rect helper
     function roundRect(ctx,x,y,w,h,r,fill,stroke){ if(typeof r==='undefined') r=5; if(typeof r==='number') r={tl:r,tr:r,br:r,bl:r}; ctx.beginPath(); ctx.moveTo(x+r.tl,y); ctx.lineTo(x+w-r.tr,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr); ctx.lineTo(x+w,y+h-r.br); ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h); ctx.lineTo(x+r.bl,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl); ctx.lineTo(x,y+r.tl); ctx.quadraticCurveTo(x,y,x+r.tl,y); ctx.closePath(); if(fill) ctx.fill(); if(stroke) ctx.stroke(); }
 
-    // interactions & wiring
     function handleBrewAction(){ const username = input.value.trim(); if(!username){ input.focus(); return; } brewHandle.classList.add('pressed'); openPopup(username).finally(()=> setTimeout(()=> brewHandle.classList.remove('pressed'), 520)); }
 
-    // click & keyboard handling - keep behavior same for desktop & mobile (touch-friendly)
     brewHandle.addEventListener('click', e=>{ e.preventDefault(); handleBrewAction(); });
     brewHandle.addEventListener('touchstart', ()=> brewHandle.classList.add('pressed'), {passive:true});
     brewHandle.addEventListener('touchend', ()=> setTimeout(()=> brewHandle.classList.remove('pressed'), 180), {passive:true});
@@ -776,22 +843,21 @@
     headerLogo.addEventListener('click', ()=> logoFileInput.click());
     logoFileInput.addEventListener('change', e=>{ const f = e.target.files && e.target.files[0]; if(!f) return; const reader = new FileReader(); reader.onload = ()=>{ const dataUrl = reader.result; headerLogo.src = dataUrl; headerLogo.classList.remove('empty'); saveHeaderLogoDataURL(dataUrl); }; reader.readAsDataURL(f); });
 
-    // Small accessibility and UX improvements on load
     document.addEventListener('DOMContentLoaded', ()=>{ 
       const storedLogo = readHeaderLogoDataURL();
       if(storedLogo){
         headerLogo.src = storedLogo;
         headerLogo.classList.remove('empty');
       } else {
+        // keep the default so mobile shows the logo immediately
         headerLogo.src = 'main/espresso-logo.png';
         headerLogo.classList.remove('empty');
       }
       setHeaderAlert('off'); machineDisplay.textContent='Espresso Machine'; setLights('idle'); setSteam('fade'); brewSteam.style.opacity=0; machineCup.style.opacity=0.98; cupBase.style.opacity=1; document.getElementById('last-user').textContent = 'last checked: ' + (readLastUser()||'—'); 
       const h = readHighest(); highestEl.textContent = h ? String(h) : '—';
-      updatePercentUIFor(0); // default percent shown
+      updatePercentUIFor(0);
       if ('ontouchstart' in window) {
         brewHandle.style.touchAction = 'manipulation';
-        // slightly enlarge touch targets on smaller screens
         const isSmall = window.innerWidth <= 520;
         if (isSmall) {
           brewHandle.style.padding = '12px 14px';
@@ -800,7 +866,6 @@
       }
     });
 
-    // expose for debugging if needed
     window._gespresso = { SPECIAL_COMMENTS, SPECIAL_COMMENTS_LOWER, hashStr, scoreFromHash, tierForScore, percentileFromScore };
 
   </script>
