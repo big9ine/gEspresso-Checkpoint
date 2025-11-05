@@ -24,6 +24,12 @@
       --max-container-width: 980px;
     }
 
+    /* Smooth scrolling globally and improved mobile scroll behavior */
+    html, body {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
     *{ box-sizing:border-box; margin:0; padding:0; font-family: 'Press Start 2P', monospace, "Segoe UI", Tahoma, sans-serif; -webkit-font-smoothing: none; image-rendering: pixelated; }
     html,body{ height:100%; }
     body{
@@ -64,7 +70,6 @@
       .container { padding:10px; gap:10px; }
     }
 
-    /* Responsive shop-header block for mobile */
     .shop-header{
       width:100%;
       display:flex;
@@ -75,7 +80,6 @@
       gap:8px;
       padding: 0;
       margin-bottom: 6px;
-      /* make sure children can shrink properly on small screens */
       align-items:center;
     }
     @media (max-width: 600px) {
@@ -96,7 +100,6 @@
       display:flex;
       align-items:center;
       gap:10px;
-      /* allow long titles to wrap and shrink on narrow screens */
       flex: 1 1 auto;
       min-width: 0;
       white-space: normal;
@@ -115,21 +118,24 @@
       }
     }
 
-    /* Make the logo visible even before JS runs and keep it legible on small screens.
-       Don't remove "useful" properties — only ensure minimum sizes and sensible scaling. */
     #header-logo {
       width:48px;
       height:48px;
       min-width:48px;
       min-height:48px;
       object-fit:contain;
-      border-radius:6px; background:transparent; display:inline-block; cursor:pointer;
+      border-radius:6px;
+      background:transparent;
+      display:inline-block;
+      display:block;
+      cursor:pointer;
       filter: drop-shadow(0 6px 4px rgba(0,0,0,0.6));
       transition: transform 160ms, opacity 160ms;
       flex: none;
+      max-width: 100%;
+      box-sizing: border-box;
     }
-    #header-logo.empty { opacity:0.9; filter: none; }
-    /* On small screens we actually increase the logo a bit so it's clearly seen */
+    #header-logo.empty { opacity:0.95; filter: none; }
     @media (max-width: 520px){
       #header-logo { width:56px; height:56px; min-width:56px; min-height:56px; }
     }
@@ -139,7 +145,6 @@
     @media (max-width:340px){
       #header-logo { width:44px; height:44px; min-width:44px; min-height:44px; }
     }
-
 
     .header-alert { width:20px; height:20px; border-radius:4px; background: linear-gradient(180deg,#ff3b3b,#b30b0b); border:2px solid #2a0a0a; box-shadow: 0 6px 0 rgba(179,11,11,0.35); display:inline-block; }
 
@@ -177,7 +182,6 @@
     .cup-wrap { display:flex; flex-direction:column; align-items:center; gap:6px; position:relative; }
     .cup { width:78px; height:60px; background: linear-gradient(180deg,#b47d4e,#8b5a2b); border:4px solid #070504; border-radius:6px 6px 8px 8px; box-shadow: inset -6px -6px 0 rgba(0,0,0,0.4); position:relative; display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; z-index:2; overflow:visible; }
 
-    /* Cup steam via pseudo elements when .brewing class is set on .cup */
     .cup::after, .cup::before {
       content: '';
       position: absolute;
@@ -239,7 +243,6 @@
       .tagline { font-size:12px; }
     }
 
-    /* Replaced leaderboard area with percentage ranking UI */
     .ranking-panel{ margin-top:6px; padding:18px; border-radius:6px; background: linear-gradient(180deg,#392414,#2b160b); border:4px solid #0b0704; color: var(--ui); font-size:12px; text-align:center; box-shadow: inset 0 6px 0 rgba(255,255,255,0.02); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
     .ranking-panel .small-label { font-size:12px; font-weight:700; color:#d4b889; }
     .ranking-panel .top-feature { display:flex; flex-direction:column; align-items:center; gap:6px; }
@@ -262,10 +265,44 @@
 
     .overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.75); z-index:2200; padding:20px; }
     .overlay.active{ display:flex; }
-    .popup{ width:100%; max-width:720px; background: linear-gradient(180deg,#2a170d,#1b1009); border-radius:6px; padding:18px; text-align:center; border:6px solid #000; box-shadow: 0 24px 60px rgba(0,0,0,0.8); color:var(--ui); }
-    .popup-header{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px }
-    .popup-title{ font-weight:900; color:var(--ui); font-size:12px; letter-spacing:1px }
-    .close-btn{ background:#050505;border:none;font-size:14px;color:var(--ui);cursor:pointer;padding:6px; border-radius:4px; box-shadow: 0 6px 0 #000; }
+    .popup{ width:100%; max-width:720px; background: linear-gradient(180deg,#2a170d,#1b1009); border-radius:6px; padding:18px; text-align:center; border:6px solid #000; box-shadow: 0 24px 60px rgba(0,0,0,0.8); color:var(--ui); position:relative; }
+    .popup-header{ display:flex; justify-content:flex-start; align-items:center; gap:12px; margin-bottom:8px; }
+    .popup-title{ font-weight:900; color:var(--ui); font-size:14px; letter-spacing:1px; }
+
+    .close-btn{ background:#050505;border:none;font-size:14px;color:var(--ui);cursor:pointer;padding:6px; border-radius:4px; box-shadow: 0 6px 0 #000; margin-left:auto; }
+
+    /* Popup inline logo (reduced size) - placed directly beside the popup title */
+    .popup-logo {
+      width:36px;
+      height:36px;
+      border-radius:6px;
+      overflow:hidden;
+      display:inline-block;
+      flex: none;
+      object-fit:contain;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.5);
+      border:3px solid #070504;
+      background: linear-gradient(180deg,#3b2314,#2b160b);
+    }
+    @media (max-width:520px){
+      .popup-logo { width:30px; height:30px; }
+      .popup-title { font-size:12px; }
+    }
+
+    .logo-layer{
+      display:none;
+      width:96px;
+      height:96px;
+      border-radius:8px;
+      overflow:hidden;
+      margin: 0 auto 8px auto;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.6);
+      background: linear-gradient(180deg,#3b2314,#2b160b);
+      border:4px solid #070504;
+    }
+    @media (max-width:520px){
+      .logo-layer { width:72px; height:72px; }
+    }
 
     .score-area{
       display:grid;
@@ -320,7 +357,6 @@
     .hidden-blurb { max-height: 40vh; overflow:auto; -webkit-overflow-scrolling:touch; }
     .shop-scene { -webkit-overflow-scrolling:touch; }
 
-    /* Responsive adjustments for shop-scene */
     .shop-scene{
       background: linear-gradient(180deg,#2a160b,#1a0f09);
       border:4px solid #0d0806;
@@ -331,18 +367,22 @@
       gap:10px;
       align-items:center;
       position:relative;
+      overflow: visible;
     }
     @media (max-width: 600px){
       .shop-scene{
         padding: 4px 2px 10px 2px;
         gap:8px;
         align-items: stretch;
+        max-height: calc(100vh - 80px);
+        overflow:auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
       }
     }
 
-    /* When the layout is two columns keep a fixed height for the visual scene */
     @media (min-width: 981px) {
-      .shop-scene { height:620px; }
+      .shop-scene { height:620px; overflow:visible; }
       .right-panel { min-height:620px; }
     }
   </style>
@@ -351,8 +391,8 @@
   <div class="container" role="main" aria-label="gEspresso pixel coffee shop">
     <div class="shop-scene" aria-hidden="false">
       <div class="shop-header">
-        <!-- provide a sensible default src so mobile browsers render the logo area immediately -->
-        <img id="header-logo" class="empty" src="main/espresso-logo.png" alt="Espresso logo (click to add)" title="Click to add espresso logo" />
+        <img id="header-logo" class="empty" src="main/espresso-logo.png" srcset="main/espresso-logo.png 1x" alt="Espresso logo (click to add)" title="Click to add espresso logo" loading="eager" decoding="sync"
+             onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20128%20128%27%3E%3Crect%20width=%27128%27%20height=%27128%27%20fill=%27%232b1509%27/%3E%3Ctext%20x=%2764%27%20y=%2776%27%20font-family=%27Press%20Start%202P,monospace%27%20font-size=%2756%27%20fill=%27%23ffdcb8%27%20text-anchor=%27middle%27%3EE%3C/text%3E%3C/svg%3E';" />
         <div class="shop-title">gEspresso Checkpoint</div>
         <div id="header-alert" class="header-alert" title="alert indicator"></div>
       </div>
@@ -437,6 +477,8 @@
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="popup" role="document" aria-labelledby="popup-title">
       <div class="popup-header">
+        <!-- popup-logo placed inline beside the title and reduced in size -->
+        <img id="popup-logo" class="popup-logo" src="" alt="gEspresso logo" style="display:none" />
         <div class="popup-title" id="popup-title">gEspresso Result</div>
         <button class="close-btn" id="popup-close" title="Close" aria-label="Close">&times;</button>
       </div>
@@ -471,6 +513,7 @@
     const popupUsernameEl = document.getElementById('popup-username');
     const commentEl = document.getElementById('comment');
     const logoLayer = document.getElementById('logo-layer');
+    const popupLogo = document.getElementById('popup-logo'); // new popup inline logo
     const shareRow = document.getElementById('share-row');
     const shareBtn = document.getElementById('share-btn');
     const closeBtn = document.getElementById('close-btn');
@@ -541,22 +584,14 @@
       SPECIAL_COMMENTS_LOWER[k.toLowerCase()] = SPECIAL_COMMENTS[k];
     });
 
-    // Utilities: deterministic hashing (FNV-1a), scoring, tiering, comments
-
-    // --- INCREASED DIFFICULTY: make it rarer for non-specials to land very high ---
+    // Utilities
     function scoreFromHash(hVal, preferLow = false){
       const UINT_MAX = 0xFFFFFFFF >>> 0;
       const p = (hVal / UINT_MAX);
-      // Make high-tier outcomes rarer for regular users by increasing exponent used in biasing.
-      // Special usernames still use the alternate (easier) path via preferLow.
-      const baseExponent = preferLow ? 2.15 : 3.25; // increased from ~2.65 to ~3.25 for stricter distribution
+      const baseExponent = preferLow ? 2.15 : 3.25;
       const biased = Math.pow(p, baseExponent);
       let normal = Math.max(0, Math.min(500, Math.floor(biased * 500)));
-
-      // For 'preferLow', use a slightly less aggressive curve, but BOSS/MAXI still rare.
       if (!preferLow) return normal;
-
-      // 'preferLow' (used for specials) gets slightly easier tiers
       const r = (hVal >>> 8) & 0xFF;
       if (r < 136){
         const lowBiased = Math.pow(p, 2.34);
@@ -572,7 +607,6 @@
         return Math.max(200, Math.min(500, highScore));
       }
     }
-    // --- END DIFFICULTY ADJUSTMENT ---
 
     function tierForScore(score){
       if (score <= 20) return 'NOVICE';
@@ -601,7 +635,6 @@
     function saveHeaderLogoDataURL(dataUrl){ try { localStorage.setItem(STORAGE_LOGO, dataUrl); } catch(e){} }
     function readHeaderLogoDataURL(){ try { return localStorage.getItem(STORAGE_LOGO) || ''; } catch(e){ return ''; } }
 
-    // Percentile mapping:
     function percentileFromScore(score){
       const s = Math.max(0, Math.min(500, Number(score) || 0));
       const exponent = 2.6;
@@ -611,22 +644,16 @@
       return Number(clamped.toFixed(1));
     }
 
-    // update the right-panel percent UI
     function updatePercentUIFor(score, username = null){
       const pct = percentileFromScore(score);
       const display = (pct < 1) ? `${pct}%` : `${pct}%`;
-
       percentValueEl.textContent = display;
       percentInline.textContent = display;
-      // Updated copy as requested:
-      // "You rank (percentage) of people saying gEspresso world wide. (The comment on each tier)"
       let uname = username;
       if(uname == null || typeof uname === 'undefined') uname = '';
       let comment = commentForScoreAndUser(uname, score);
       percentSubEl.innerHTML = `You rank <strong>${display}</strong> of people saying gEspresso world wide.<br>(${comment})`;
     }
-
-    // The rest remains unchanged (functions, interactions...)
 
     function setLights(state){
       lights.forEach((el,i)=>{ if(!el) return; el.classList.remove('on','pulse'); if (state==='warming' && i<2) { el.classList.add('on','pulse'); el.style.animationDelay=(i*70)+'ms'; } if(state==='brewing'){ el.classList.add('on','pulse'); el.style.animationDelay=(i*40)+'ms'; } if(state==='done'){ if(i%2===0) el.classList.add('on'); } });
@@ -665,9 +692,7 @@
       });
     }
 
-    // simple FNV-1a hash used elsewhere - keep exposed for debugging
     function hashStr(str){
-      // FNV-1a 32-bit
       let h = 0x811c9dc5 >>> 0;
       for (let i=0;i<str.length;i++){
         h ^= str.charCodeAt(i);
@@ -698,21 +723,40 @@
 
     async function openPopup(username){
       await brewSequence(username);
+
+      // Build logo src (prefer stored data URL, fallback to header image or bundled)
+      const storedLogo = readHeaderLogoDataURL();
+      const fallback = (headerLogo && headerLogo.src) ? headerLogo.src : 'main/espresso-logo.png';
+      const logoSrc = storedLogo || fallback || 'main/espresso-logo.png';
+
+      // inject small inline popup logo beside the title
+      try {
+        popupLogo.src = logoSrc;
+        popupLogo.style.display = 'inline-block';
+        popupLogo.setAttribute('aria-hidden', 'false');
+      } catch (e) {
+        popupLogo.style.display = 'none';
+        popupLogo.setAttribute('aria-hidden', 'true');
+      }
+
+      // Keep logo-layer available for larger display (if desired), but hide here to avoid duplication
+      logoLayer.innerHTML = '';
+      logoLayer.style.display = 'none';
+      logoLayer.setAttribute('aria-hidden','true');
+
       overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false');
       scoreEl.textContent='0';
       popupUsernameEl.textContent = '@' + username;
       tierEl.textContent=''; tierEl.classList.remove('show');
       commentEl.textContent = 'Brewing your result…'; commentEl.classList.remove('show'); commentEl.setAttribute('aria-hidden','true');
-      shareRow.style.display='none'; logoLayer.innerHTML='';
+      shareRow.style.display='none';
 
       const lowerUsername = String(username || '').toLowerCase();
       const h = hashStr(lowerUsername);
       const isSpecial = SPECIAL_COMMENTS_LOWER.hasOwnProperty(lowerUsername);
-      // preferLow is false for non-specials (harder), true for specials (easier path)
       let score = scoreFromHash(h, !isSpecial);
 
       if (isSpecial){
-        // specials get an additional boost to ensure they appear higher consistently
         const boost = 340 + (h % 161);
         score = Math.max(score, boost);
       }
@@ -726,12 +770,10 @@
       commentEl.textContent = commentForScoreAndUser(username, score);
       commentEl.classList.add('show'); commentEl.setAttribute('aria-hidden','false');
 
-      // update highest & last user locally for persistence across reloads on same device
       const prevHighest = readHighest();
       if (score > prevHighest){ writeHighest(score); }
       writeLastUser(username);
 
-      // update top-percent UI (this replaces leaderboard)
       updatePercentUIFor(score, username);
 
       shareRow.style.display='flex';
@@ -742,19 +784,27 @@
       };
       downloadBtn.onclick = ()=> createAndDownloadScoreImage(username, score, tier);
 
-      // update right-panel summary numbers (local only)
       highestEl.textContent = String(readHighest() || '—');
       topNameEl.textContent = '—';
       lastUserEl.textContent = 'last checked: ' + (readLastUser() || '—');
 
-      // on small screens ensure popup is scrolled to top so user sees score
       if (window.innerWidth < 520) {
         try { overlay.scrollTop = 0; } catch(e){}
       }
     }
 
     function closePopup(){
-      overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); logoLayer.innerHTML=''; scoreEl.textContent='0'; popupUsernameEl.textContent='—';
+      overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true');
+      // hide popup inline logo
+      popupLogo.style.display = 'none';
+      popupLogo.src = '';
+      popupLogo.setAttribute('aria-hidden','true');
+
+      logoLayer.innerHTML = '';
+      logoLayer.style.display = 'none';
+      logoLayer.setAttribute('aria-hidden','true');
+
+      scoreEl.textContent='0'; popupUsernameEl.textContent='—';
       tierEl.textContent=''; tierEl.classList.remove('show'); commentEl.textContent=''; shareRow.style.display='none'; machineDisplay.textContent='Espresso Machine'; setLights('idle'); setSteam('fade'); machineCup.style.transform=''; cupBase.style.transform=''; brewSteam.style.opacity = 0; setHeaderAlert('off');
     }
 
@@ -779,14 +829,12 @@
       const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
       const ctx = canvas.getContext('2d');
 
-      // background
       const g = ctx.createLinearGradient(0,0,0,height); g.addColorStop(0, '#3b2314'); g.addColorStop(1, '#23110a'); ctx.fillStyle = g; ctx.fillRect(0,0,width,height);
       const grain = ctx.createImageData(100,100);
       for (let i=0;i<grain.data.length;i+=4){ const v=230+Math.floor(Math.random()*20); grain.data[i]=v; grain.data[i+1]=v; grain.data[i+2]=v; grain.data[i+3]=6; }
       for (let y=0;y<height;y+=100){ for (let x=0;x<width;x+=100){ ctx.putImageData(grain,x,y); } }
       ctx.fillStyle='rgba(0,0,0,0.15)'; ctx.beginPath(); ctx.ellipse(width/2,height/2,width/2.2,height/2.4,0,0,Math.PI*2); ctx.fill();
 
-      // header
       const storedLogo = readHeaderLogoDataURL();
       ctx.fillStyle='rgba(255,255,255,0.04)'; ctx.fillRect(30,24,width-60,96); ctx.strokeStyle='rgba(0,0,0,0.45)'; ctx.lineWidth=4; ctx.strokeRect(30,24,width-60,96);
       const headerPaddingLeft = 48, headerLogoSize = 72, headerTextX = headerPaddingLeft + headerLogoSize + 18;
@@ -815,12 +863,28 @@
       }
 
       function finalizeAndExport(){
-        ctx.fillStyle='#ffdcb8'; ctx.font='800 44px "Press Start 2P", monospace'; ctx.fillText('@' + username, 70, 200);
-        ctx.save(); ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='900 140px "Press Start 2P", monospace'; const scoreText=String(score); const scoreWidth=ctx.measureText(scoreText).width; ctx.fillText(scoreText,(width-scoreWidth)/2+6,360+6); ctx.fillStyle='#d4a762'; ctx.font='900 140px "Press Start 2P", monospace'; ctx.fillText(scoreText,(width-scoreWidth)/2,360); ctx.restore();
-        ctx.fillStyle='#f0e3c9'; ctx.font='700 20px "Press Start 2P", monospace'; const suffix='gEspresso'; const suffixWidth=ctx.measureText(suffix).width; ctx.fillText(suffix,(width-suffixWidth)/2,440);
-        const boxW=320, boxH=110, boxX=width-boxW-70, boxY=180; ctx.fillStyle='rgba(0,0,0,0.45)'; roundRect(ctx,boxX,boxY,boxW,boxH,14,true,false); ctx.fillStyle='#c59a6f'; roundRect(ctx,boxX+8,boxY+8,boxW-16,boxH-16,10,true,false); ctx.fillStyle='#2b1509'; ctx.font='900 36px "Press Start 2P", monospace'; const tierText=String(tier||''); const tw=ctx.measureText(tierText).width; ctx.fillText(tierText, boxX+(boxW-tw)/2, boxY+58);
-        ctx.fillStyle='#cdb58f'; ctx.font='700 16px "Press Start 2P", monospace'; const note='Brewed with gEspresso Checkpoint'; ctx.fillText(note,70,height-60);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.92); const a = document.createElement('a'); a.href=dataUrl; const cleanName=(username||'user').replace(/[^a-z0-9_\-]/ig,'_'); a.download = `${cleanName}_gEspresso_${score}.jpg`; document.body.appendChild(a); a.click(); a.remove();
+        const storedLogo2 = readHeaderLogoDataURL();
+        if (storedLogo2){
+          const img2 = new Image();
+          img2.onload = () => {
+            roundRect(ctx, 36, 36, 72, 72, 12, true, false);
+            try { ctx.drawImage(img2, 36+6, 36+6, 72-12, 72-12); } catch(e){}
+            drawTextAndFinish();
+          };
+          img2.onerror = drawTextAndFinish;
+          img2.src = storedLogo2;
+        } else {
+          drawTextAndFinish();
+        }
+
+        function drawTextAndFinish(){
+          ctx.fillStyle='#ffdcb8'; ctx.font='800 44px "Press Start 2P", monospace'; ctx.fillText('@' + username, 70, 200);
+          ctx.save(); ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.font='900 140px "Press Start 2P", monospace'; const scoreText=String(score); const scoreWidth=ctx.measureText(scoreText).width; ctx.fillText(scoreText,(width-scoreWidth)/2+6,360+6); ctx.fillStyle='#d4a762'; ctx.font='900 140px "Press Start 2P", monospace'; ctx.fillText(scoreText,(width-scoreWidth)/2,360); ctx.restore();
+          ctx.fillStyle='#f0e3c9'; ctx.font='700 20px "Press Start 2P", monospace'; const suffix='gEspresso'; const suffixWidth=ctx.measureText(suffix).width; ctx.fillText(suffix,(width-suffixWidth)/2,440);
+          const boxW=320, boxH=110, boxX=width-boxW-70, boxY=180; ctx.fillStyle='rgba(0,0,0,0.45)'; roundRect(ctx,boxX,boxY,boxW,boxH,14,true,false); ctx.fillStyle='#c59a6f'; roundRect(ctx,boxX+8,boxY+8,boxW-16,boxH-16,10,true,false); ctx.fillStyle='#2b1509'; ctx.font='900 36px "Press Start 2P", monospace'; const tierText=String(tier||''); const tw=ctx.measureText(tierText).width; ctx.fillText(tierText, boxX+(boxW-tw)/2, boxY+58);
+          ctx.fillStyle='#cdb58f'; ctx.font='700 16px "Press Start 2P", monospace'; const note='Brewed with gEspresso Checkpoint'; ctx.fillText(note,70,height-60);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.92); const a = document.createElement('a'); a.href=dataUrl; const cleanName=(username||'user').replace(/[^a-z0-9_\-]/ig,'_'); a.download = `${cleanName}_gEspresso_${score}.jpg`; document.body.appendChild(a); a.click(); a.remove();
+        }
       }
     }
 
@@ -849,10 +913,12 @@
         headerLogo.src = storedLogo;
         headerLogo.classList.remove('empty');
       } else {
-        // keep the default so mobile shows the logo immediately
         headerLogo.src = 'main/espresso-logo.png';
         headerLogo.classList.remove('empty');
       }
+      headerLogo.style.display = 'block';
+      headerLogo.setAttribute('loading','eager');
+
       setHeaderAlert('off'); machineDisplay.textContent='Espresso Machine'; setLights('idle'); setSteam('fade'); brewSteam.style.opacity=0; machineCup.style.opacity=0.98; cupBase.style.opacity=1; document.getElementById('last-user').textContent = 'last checked: ' + (readLastUser()||'—'); 
       const h = readHighest(); highestEl.textContent = h ? String(h) : '—';
       updatePercentUIFor(0);
